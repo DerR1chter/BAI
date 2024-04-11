@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, SafeAreaView, Text } from 'react-native';
-import { InputBubble } from '../Components/InputBubble';
-import { KeywordArea } from '../Components/KeywordArea'
-import { ResponseBubble } from '../Components/ResponseBubble'
+import {View, StyleSheet, SafeAreaView, Text} from 'react-native';
+import {InputBubble} from '../Components/InputBubble';
+import {KeywordArea} from '../Components/KeywordArea';
+import {ResponseBubble} from '../Components/ResponseBubble';
 
 const MainScreen: React.FC = () => {
   const handleKeywordPress = (keyword: string) => {
@@ -13,6 +13,16 @@ const MainScreen: React.FC = () => {
     console.log(`Service pressed: ${service}`);
   };
 
+  const frequencies = [4, 6, 8, 12, 20, 24];
+  const keywords = [
+    'Pickup',
+    'Delivery',
+    'Menu',
+    'Hours',
+    'Reservations',
+    'Specials',
+  ];
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.blueSection}>
@@ -21,10 +31,11 @@ const MainScreen: React.FC = () => {
       </View>
       <View style={styles.whiteSection}>
         <KeywordArea
-          keywords={['Pickup', 'Delivery', 'Menu', 'Hours', 'Reservations', 'Specials']}
+          keywords={keywords}
           onKeywordPress={handleKeywordPress}
           services={['None', 'More']}
           onServicePress={handleServicePress}
+          frequencies={frequencies}
         />
       </View>
       <View style={styles.blueSection}>

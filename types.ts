@@ -4,7 +4,8 @@ export interface InputBubbleProps {
   
   export interface KeywordProps {
     text: string;
-    onPress: () => void;
+    // onPress: () => void;
+    frequency: number;
   }
   
   export interface ServiceButtonProps {
@@ -21,5 +22,6 @@ export interface InputBubbleProps {
     onKeywordPress: (keyword: string) => void;
     services: string[];
     onServicePress: (service: string) => void;
+    frequencies: number[];
   }
   
