@@ -1,6 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import { ResponseBubbleProps } from '../types';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import {ResponseBubbleProps} from '../types';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import RNFS from 'react-native-fs';
+import axios from 'axios';
+var Buffer = require('buffer/').Buffer;
+import APIKeysConfig from '../APIKeysConfig';
 
 const styles = StyleSheet.create({
   responseBubble: {
@@ -21,7 +26,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'flex-start',
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: 'Montserrat-Medium',
   },
   responseIcon: {
@@ -31,11 +36,55 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ResponseBubble: React.FC<ResponseBubbleProps> = ({ text }) => {
-    return (
-      <View style={styles.responseBubble}>
-        <Text style={styles.responseText}>{text}</Text>
-        <Image source={require('../assets/speaker.png')} style={styles.responseIcon} resizeMode="contain" />
-      </View>
-    );
+const audioRecorderPlayer = new AudioRecorderPlayer();
+
+export const ResponseBubble: React.FC<ResponseBubbleProps> = ({text}) => {
+  const fetchAndPlaySpeech = async () => {
+    try {
+      const response = await axios.post(
+        'https://api.openai.com/v1/audio/speech',
+        {
+          model: 'tts-1',
+          voice: 'alloy',
+          input: text,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${APIKeysConfig.openAI}`,
+            'Content-Type': 'application/json',
+          },
+          responseType: 'arraybuffer',
+        },
+      );
+
+      const audioPath = `${RNFS.DocumentDirectoryPath}/response.mp3`;
+      await RNFS.writeFile(
+        audioPath,
+        Buffer.from(response.data, 'binary').toString('base64'),
+        'base64',
+      );
+
+      await audioRecorderPlayer.startPlayer(audioPath);
+      audioRecorderPlayer.addPlayBackListener(e => {
+        if (e.currentPosition === e.duration) {
+          audioRecorderPlayer.stopPlayer();
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching or playing speech:', error);
+    }
   };
+
+  return (
+    <View style={styles.responseBubble}>
+      <Text style={styles.responseText}>{text}</Text>
+      <TouchableOpacity onPress={fetchAndPlaySpeech}>
+        <Image
+          source={require('../assets/speaker.png')}
+          style={styles.responseIcon}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
+    </View>
+  );
+};
