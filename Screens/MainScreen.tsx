@@ -21,16 +21,10 @@ const MainScreen: React.FC = () => {
   const [fullResponse, setFullResponse] = useState<string>('');
   const [isFrequencyCheckingMode, setIsFrequencyCheckingMode] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [language, setLanguage] = useState('English');
   const [voice, setVoice] = useState('male');
   const [frequencyModeBackgroundColor, setFrequencyModeBackgroundColor] =
     useState('#000000');
-
-  const handleSettingsChange = (newLanguage: string, newVoice: string) => {
-    setLanguage(newLanguage);
-    setVoice(newVoice);
-    setModalVisible(false);
-  };
+  const [error, setError] = useState('');
 
   const handleServicePress = (service: string) => {
     if (service === 'More') {
@@ -112,9 +106,11 @@ const MainScreen: React.FC = () => {
                 setResponseOptions={setResponseOptions}
                 waitingForResponse={waitingForResponse}
                 setWaitingForResponse={setWaitingForResponse}
+                setError={setError}
               />
             </View>
             <View style={styles.whiteSection}>
+              {error.length > 0 && <Text>{error}</Text>}
               <KeywordArea
                 keywords={responseOptions}
                 onKeywordPress={setSelectedResponse}

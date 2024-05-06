@@ -13,6 +13,7 @@ import closeIcon from '../assets/close.png';
 import {SettingsButton} from '../Components/SettingsButton';
 import {SettingsProps} from '../types';
 import {useTranslation} from 'react-i18next';
+import APIKeysConfig from '../APIKeysConfig';
 
 export const Settings: React.FC<SettingsProps> = ({voice, setVoice}) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -78,6 +79,9 @@ export const Settings: React.FC<SettingsProps> = ({voice, setVoice}) => {
                 style={(voice === 'female' && styles.selectedLanguage) || {}}
               />
             </View>
+            <Text style={styles.text}>
+              Current API Key: ${APIKeysConfig.openAI}
+            </Text>
           </View>
         </View>
       </Modal>
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    height: 200,
+    height: 240,
   },
   optionsContainer: {
     display: 'flex',

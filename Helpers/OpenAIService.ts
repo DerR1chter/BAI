@@ -6,9 +6,10 @@ export const sendAudioToWhisper = async (
   setProcessedText: (text: string) => void,
   setResponseOptions: (responseOptions: string[]) => void,
   setWaitingForResponse: (waitingForResponse: boolean) => void,
-  language: string
+  language: string,
+  setError: (error: string) => void
 ) => {
-  console.log("Language from: ", language)
+  setError('');
   const fileUri = 'file://' + filePath;
   const formData = new FormData();
   formData.append('file', {
@@ -18,6 +19,10 @@ export const sendAudioToWhisper = async (
   });
   formData.append('model', 'whisper-1');
   formData.append('response_format', 'text');
+  const supportedLanguages = ['en', 'de']
+  if (!supportedLanguages.includes(language)) {
+    language = 'en';
+  }
   formData.append('language', language);
 
   setWaitingForResponse(true);
@@ -37,6 +42,7 @@ export const sendAudioToWhisper = async (
     generateResponseOptions(transcript, setResponseOptions, setWaitingForResponse);
     console.log('Transcript: ', transcript);
   } catch (error) {
+    setError(`Error processing audio file, ${error}`);
     console.error('Error processing audio file:', error);
   }
 };

@@ -5,6 +5,7 @@ export interface InputBubbleProps {
     setResponseOptions: (responseOptions: string[]) => void;
     waitingForResponse: boolean;
     setWaitingForResponse: (waitingForResponse: boolean) => void;
+    setError: (error: string) => void;
   }
   
   export interface KeywordProps {

@@ -10,8 +10,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     margin: 5,
-    height: 220,
-    width: 180,
+    height: 200,
+    width: 160,
     justifyContent: 'center',
   },
   keywordText: {

@@ -28,6 +28,7 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
   setResponseOptions,
   waitingForResponse,
   setWaitingForResponse,
+  setError,
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -122,6 +123,7 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
       setResponseOptions,
       setWaitingForResponse,
       language,
+      setError,
     );
   };
 
