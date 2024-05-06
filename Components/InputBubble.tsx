@@ -16,62 +16,19 @@ import RNFS from 'react-native-fs';
 import {InputBubbleProps} from '../types';
 import RNSoundLevel from 'react-native-sound-level';
 import {Animated} from 'react-native';
-
-const styles = StyleSheet.create({
-  inputBubble: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    backgroundColor: '#4945BD',
-    borderRadius: 25,
-    padding: 15,
-    paddingRight: 20,
-    margin: 10,
-    height: 130,
-    marginTop: 20,
-    width: '90%',
-    display: 'flex',
-    alignSelf: 'center',
-  },
-  inputText: {
-    flex: 1,
-    alignSelf: 'flex-start',
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontFamily: 'Montserrat-Medium',
-  },
-  inputIcon: {
-    width: 30,
-    height: 30,
-    alignSelf: 'flex-end',
-  },
-  timerText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    position: 'absolute',
-    right: 10,
-    top: 10,
-  },
-  playbackButton: {
-    position: 'absolute',
-    bottom: -25,
-    right: 17,
-  },
-  playbackText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontFamily: 'Montserrat-Bold',
-  },
-  mic: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-});
+import {sendAudioToWhisper} from '../Helpers/OpenAIService';
+import {useTranslation} from 'react-i18next';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
-export const InputBubble: React.FC<InputBubbleProps> = ({text}) => {
+export const InputBubble: React.FC<InputBubbleProps> = ({
+  text,
+  processedText,
+  setProcessedText,
+  setResponseOptions,
+  waitingForResponse,
+  setWaitingForResponse,
+}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioPath, setAudioPath] = useState<string>('');
@@ -79,6 +36,8 @@ export const InputBubble: React.FC<InputBubbleProps> = ({text}) => {
   const [soundLevel, setSoundLevel] = useState<number>(0);
   const soundLevelAnim = useRef(new Animated.Value(0)).current; // Initial height is 0
   const [isMonitoringStarted, setIsMonitoringStarted] = useState(false);
+  const {t, i18n} = useTranslation();
+  const language = i18n?.language;
 
   useEffect(() => {
     const requestPermission = async () => {
@@ -157,6 +116,13 @@ export const InputBubble: React.FC<InputBubbleProps> = ({text}) => {
     setIsRecording(false);
     RNSoundLevel.stop();
     soundLevelAnim.setValue(0);
+    sendAudioToWhisper(
+      audioPath,
+      setProcessedText,
+      setResponseOptions,
+      setWaitingForResponse,
+      language,
+    );
   };
 
   const onPlayAudio = async () => {
@@ -186,7 +152,9 @@ export const InputBubble: React.FC<InputBubbleProps> = ({text}) => {
 
   return (
     <View style={styles.inputBubble}>
-      <Text style={styles.inputText}>{text}</Text>
+      <Text style={styles.inputText}>
+        {processedText.length > 0 ? processedText : text}
+      </Text>
       {isRecording && <Text style={styles.timerText}>{recordTime}</Text>}
       {/* <Text>Level: {soundLevel.toFixed(2)} dB</Text> */}
       <TouchableOpacity
@@ -211,9 +179,64 @@ export const InputBubble: React.FC<InputBubbleProps> = ({text}) => {
       </TouchableOpacity>
       {audioPath && !isRecording && (
         <TouchableOpacity style={styles.playbackButton} onPress={onPlayAudio}>
-          <Text style={styles.playbackText}>{isPlaying ? 'Stop' : 'Play'}</Text>
+          <Text style={styles.playbackText}>
+            {isPlaying ? t('Stop') : t('Play')}
+          </Text>
         </TouchableOpacity>
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  inputBubble: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    backgroundColor: '#4945BD',
+    borderRadius: 25,
+    padding: 15,
+    paddingRight: 20,
+    margin: 10,
+    height: 130,
+    marginTop: 20,
+    width: '90%',
+    display: 'flex',
+    alignSelf: 'center',
+    position: 'relative',
+  },
+  inputText: {
+    flex: 1,
+    alignSelf: 'flex-start',
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Montserrat-Medium',
+  },
+  inputIcon: {
+    width: 30,
+    height: 30,
+    alignSelf: 'flex-end',
+  },
+  timerText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  playbackButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 57,
+  },
+  playbackText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Montserrat-Bold',
+  },
+  mic: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+});

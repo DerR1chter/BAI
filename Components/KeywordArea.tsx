@@ -1,11 +1,59 @@
 // KeywordArea.tsx
-import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import React, {useState} from 'react';
+import {View, StyleSheet, Text, ActivityIndicator} from 'react-native';
 import {Keyword} from './Keyword';
 import {ServiceButton} from './ServiceButton';
 import {KeywordAreaProps} from '../types';
+import {useTranslation} from 'react-i18next';
+
+export const KeywordArea: React.FC<KeywordAreaProps> = ({
+  keywords,
+  onKeywordPress,
+  services,
+  onServicePress,
+  waitingForResponse,
+}) => {
+  const keyWordsLoaded = keywords.length > 0;
+  const {t} = useTranslation();
+
+  return (
+    <View style={styles.container}>
+      {waitingForResponse ? (
+        <ActivityIndicator size="large" color="#3A2BB5" />
+      ) : (
+        <View style={styles.keywordArea}>
+          {keyWordsLoaded && (
+            <Text style={styles.text}>{t('Select_keyword')}</Text>
+          )}
+          <View style={styles.grid}>
+            {keywords.map((keyword, index) => (
+              <View key={index} style={styles.card}>
+                <Keyword text={keyword} onKeywordPress={onKeywordPress} />
+              </View>
+            ))}
+          </View>
+          <View style={styles.serviceRow}>
+            {keyWordsLoaded &&
+              services.map((service, index) => (
+                <ServiceButton
+                  key={index}
+                  text={service}
+                  onPress={() => onServicePress(service)}
+                />
+              ))}
+          </View>
+        </View>
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   keywordArea: {
     margin: 10,
   },
@@ -21,10 +69,10 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#000000',
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'Montserrat-Medium',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   serviceRow: {
     marginTop: 20,
@@ -34,36 +82,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-export const KeywordArea: React.FC<KeywordAreaProps> = ({
-  keywords,
-  onKeywordPress,
-  frequencies,
-  services,
-  onServicePress,
-}) => {
-  return (
-    <View style={styles.keywordArea}>
-      <Text style={styles.text}>Select a keyword for your answer</Text>
-      <View style={styles.grid}>
-        {keywords.map((keyword, index) => (
-          <View key={index} style={styles.card}>
-            <Keyword
-              text={`${keyword}: ${frequencies[index]}Hz`}
-              frequency={frequencies[index]}
-            />
-          </View>
-        ))}
-      </View>
-      <View style={styles.serviceRow}>
-        {services.map((service, index) => (
-          <ServiceButton
-            key={index}
-            text={service}
-            onPress={() => onServicePress(service)}
-          />
-        ))}
-      </View>
-    </View>
-  );
-};

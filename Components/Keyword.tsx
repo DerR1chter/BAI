@@ -1,7 +1,6 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet, Animated} from 'react-native';
 import {KeywordProps} from '../types';
-import useFlicker from './useFlicker';
 
 const styles = StyleSheet.create({
   keyword: {
@@ -11,7 +10,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     margin: 5,
     height: 60,
-    width: 170,
+    width: 160,
     justifyContent: 'center',
   },
   keywordText: {
@@ -22,23 +21,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export const Keyword: React.FC<KeywordProps> = ({text, frequency}) => {
-  const {flickerAnim, isFlickering, startFlickering, stopFlickering} =
-    useFlicker(frequency);
-
-  const handlePress = () => {
-    if (isFlickering) {
-      stopFlickering();
-    } else {
-      startFlickering();
-    }
-  };
-
+export const Keyword: React.FC<KeywordProps> = ({text, onKeywordPress}) => {
   return (
-    <Animated.View style={{...styles.keyword, opacity: flickerAnim}}>
-      <TouchableOpacity onPress={handlePress}>
+    <TouchableOpacity onPress={() => onKeywordPress(text)} style={{margin: 5}}>
+      <Animated.View style={styles.keyword}>
         <Text style={styles.keywordText}>{text}</Text>
-      </TouchableOpacity>
-    </Animated.View>
+      </Animated.View>
+    </TouchableOpacity>
   );
 };

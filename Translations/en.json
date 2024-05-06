@@ -1,0 +1,17 @@
+{
+    "translation": {
+        "Hi": "Hi",
+        "Press_the_mic": "Press the microphone to start recording",
+        "Background_color_mode": "Background Color Selecting Mode:",
+        "Cards_color_mode": "Cards Color Selecting Mode:",
+        "Frequency_checking_mode": "Frequency Checking Mode:",
+        "Frequency_specifying_mode": "Frequency Specifying Mode:",
+        "Stop": "Stop",
+        "Play": "Play",
+        "Select_keyword": "Select a keyword for your answer:",
+        "Select_language": "Select the language",
+        "Select_voice": "Select the voice",
+        "Press_the_button": "Press the start button"
+    }
+}
+  

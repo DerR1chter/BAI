@@ -1,61 +1,50 @@
-import React from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import {ResponseBubbleProps} from '../types';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
-import axios from 'axios';
 var Buffer = require('buffer/').Buffer;
-import APIKeysConfig from '../APIKeysConfig';
-
-const styles = StyleSheet.create({
-  responseBubble: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#4945BD',
-    borderRadius: 25,
-    padding: 15,
-    paddingRight: 20,
-    margin: 10,
-    height: 200,
-    marginTop: 20,
-    width: '90%',
-    display: 'flex',
-    alignSelf: 'center',
-  },
-  responseText: {
-    flex: 1,
-    alignSelf: 'flex-start',
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontFamily: 'Montserrat-Medium',
-  },
-  responseIcon: {
-    width: 30,
-    height: 30,
-    alignSelf: 'flex-end',
-  },
-});
+import speaker from '../assets/speaker.png';
+import {fetchSpeech, generateFullResponse} from '../Helpers/OpenAIService';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
-export const ResponseBubble: React.FC<ResponseBubbleProps> = ({text}) => {
-  const fetchAndPlaySpeech = async () => {
-    try {
-      const response = await axios.post(
-        'https://api.openai.com/v1/audio/speech',
-        {
-          model: 'tts-1',
-          voice: 'alloy',
-          input: text,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${APIKeysConfig.openAI}`,
-            'Content-Type': 'application/json',
-          },
-          responseType: 'arraybuffer',
-        },
+export const ResponseBubble: React.FC<ResponseBubbleProps> = ({
+  question,
+  selectedResponse,
+  fullResponse,
+  setFullResponse,
+  waitingForSpeechGeneration,
+  setWaitingForSpeechGeneration,
+  voice,
+}) => {
+  useEffect(() => {
+    if (selectedResponse.length > 0) {
+      generateFullResponse(
+        question,
+        selectedResponse,
+        setFullResponse,
+        setWaitingForSpeechGeneration,
       );
+    }
+  }, [selectedResponse]);
+
+  useEffect(() => {
+    if (fullResponse.length > 0) {
+      fetchAndPlaySpeech(fullResponse);
+    }
+  }, [fullResponse]);
+
+  const fetchAndPlaySpeech = async (fullResponseArg: string) => {
+    try {
+      const response = await fetchSpeech(fullResponseArg, voice);
 
       const audioPath = `${RNFS.DocumentDirectoryPath}/response.mp3`;
       await RNFS.writeFile(
@@ -76,15 +65,66 @@ export const ResponseBubble: React.FC<ResponseBubbleProps> = ({text}) => {
   };
 
   return (
-    <View style={styles.responseBubble}>
-      <Text style={styles.responseText}>{text}</Text>
-      <TouchableOpacity onPress={fetchAndPlaySpeech}>
-        <Image
-          source={require('../assets/speaker.png')}
-          style={styles.responseIcon}
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
+    <View
+      style={[
+        styles.responseBubble,
+        waitingForSpeechGeneration && styles.activityIndicator,
+      ]}>
+      {waitingForSpeechGeneration ? (
+        <ActivityIndicator size="large" color="#FFFFFF" />
+      ) : (
+        <>
+          <Text style={styles.responseText}>{fullResponse}</Text>
+          <TouchableOpacity
+            onPress={() => fetchAndPlaySpeech(fullResponse)}
+            disabled={fullResponse.length < 1}>
+            <Image
+              source={speaker}
+              style={[
+                styles.responseIcon,
+                fullResponse.length < 1 && styles.noResponse,
+              ]}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  responseBubble: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    backgroundColor: '#4945BD',
+    borderRadius: 25,
+    padding: 15,
+    paddingRight: 20,
+    margin: 10,
+    height: 160,
+    marginTop: 20,
+    width: '90%',
+    display: 'flex',
+    alignSelf: 'center',
+  },
+  activityIndicator: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noResponse: {
+    opacity: 0.5,
+  },
+  responseText: {
+    flex: 1,
+    alignSelf: 'flex-start',
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontFamily: 'Montserrat-Medium',
+  },
+  responseIcon: {
+    width: 30,
+    height: 30,
+    alignSelf: 'flex-end',
+  },
+});

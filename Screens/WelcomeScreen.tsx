@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import mic from '../assets/mic.png';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, {useState} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import start from '../assets/start.png';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {useTranslation} from 'react-i18next';
 
 type RootStackParamList = {
   Welcome: undefined;
   Main: undefined;
 };
 
-type WelcomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Welcome'>;
+type WelcomeScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Welcome'
+>;
 
 const WelcomeScreen: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
@@ -22,20 +26,30 @@ const WelcomeScreen: React.FC = () => {
     setTimeout(() => setIsListening(false), 3000);
   };
 
+  const {t} = useTranslation();
+
   return (
     <View style={styles.container}>
       <Text style={styles.eegchat}>EEGChat</Text>
       <View style={styles.content}>
-      <Text style={styles.greeting}>Hi 👋</Text>
-      <View style={styles.microphoneContainer}>
-        <TouchableOpacity
-          style={[styles.microphoneButton, isListening && styles.microphoneButtonActive]}
-          onPress={handleMicrophonePress}
-        >
-          <Image source={mic} style={styles.microphoneIcon} resizeMode="contain" />
-        </TouchableOpacity>
-        {isListening && <View style={styles.pulsatingCircle} />}
-        <Text style={styles.microphoneButtonText}>Press the microphone</Text>
+        <Text style={styles.greeting}>{t('Hi')} 👋</Text>
+        <View style={styles.microphoneContainer}>
+          <TouchableOpacity
+            style={[
+              styles.microphoneButton,
+              isListening && styles.microphoneButtonActive,
+            ]}
+            onPress={handleMicrophonePress}>
+            <Image
+              source={start}
+              style={styles.microphoneIcon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+          {isListening && <View style={styles.pulsatingCircle} />}
+          <Text style={styles.microphoneButtonText}>
+            {t('Press_the_button')}
+          </Text>
         </View>
       </View>
     </View>

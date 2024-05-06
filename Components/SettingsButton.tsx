@@ -9,8 +9,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     margin: 5,
-    height: 40,
-    width: 150,
+    height: 50,
+    width: 100,
     justifyContent: 'center',
   },
   serviceButtonText: {
@@ -27,14 +27,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ServiceButton: React.FC<ServiceButtonProps> = ({
+export const SettingsButton: React.FC<ServiceButtonProps> = ({
   text,
   onPress,
+  style = {},
 }) => {
   const none = text === 'Change topic';
   return (
     <TouchableOpacity
-      style={[styles.serviceButton, none && styles.noneButton]}
+      style={[styles.serviceButton, style, none && styles.noneButton]}
       onPress={onPress}>
       <Text style={[styles.serviceButtonText, none && styles.noneText]}>
         {text}

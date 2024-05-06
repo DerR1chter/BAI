@@ -1,20 +1,14 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-} from 'react-native';
+import {SafeAreaView, StyleSheet} from 'react-native';
 
 import WelcomeScreen from './Screens/WelcomeScreen';
-import { NavigationContainer } from '@react-navigation/native'
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MainScreen from './Screens/MainScreen';
-
 
 const Stack = createNativeStackNavigator();
 
-
 function App(): React.JSX.Element {
-
   const backgroundStyle = {
     flex: 1,
   };
@@ -22,7 +16,9 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaView style={backgroundStyle}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Welcome" screenOptions={{headerShown: false}}>
+        <Stack.Navigator
+          initialRouteName="Welcome"
+          screenOptions={{headerShown: false}}>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Main" component={MainScreen} />
         </Stack.Navigator>
