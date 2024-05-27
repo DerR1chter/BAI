@@ -16,7 +16,7 @@ import RNFS from 'react-native-fs';
 import {InputBubbleProps} from '../types';
 import RNSoundLevel from 'react-native-sound-level';
 import {Animated} from 'react-native';
-import {sendAudioToWhisper} from '../Helpers/OpenAIService';
+import {sendAudioToWhisper} from '../Helpers/OpenAIService.ts';
 import {useTranslation} from 'react-i18next';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
@@ -26,9 +26,11 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
   processedText,
   setProcessedText,
   setResponseOptions,
+  setCategory,
   waitingForResponse,
   setWaitingForResponse,
   setError,
+  chatHistory,
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -121,9 +123,11 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
       audioPath,
       setProcessedText,
       setResponseOptions,
+      setCategory,
       setWaitingForResponse,
       language,
       setError,
+      chatHistory,
     );
   };
 

@@ -1,5 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, SafeAreaView, Text, Switch} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  SafeAreaView,
+  Text,
+  Switch,
+  Button,
+} from 'react-native';
 import {InputBubble} from '../Components/InputBubble';
 import {KeywordArea} from '../Components/KeywordArea';
 import {ResponseBubble} from '../Components/ResponseBubble';
@@ -8,8 +15,11 @@ import {FrequencyArea} from '../Components/FrequencyArea';
 import {
   generateAnswerForChangingTopic,
   regenerateResponseOptions,
-} from '../Helpers/OpenAIService';
+} from '../Helpers/OpenAIService.ts';
 import {useTranslation} from 'react-i18next';
+import {ChatMessage} from '../types';
+import ChatHistory from '../Components/ChatHistory';
+import {ServiceButton} from '../Components/ServiceButton';
 
 const MainScreen: React.FC = () => {
   const [processedText, setProcessedText] = useState<string>('');
@@ -17,6 +27,7 @@ const MainScreen: React.FC = () => {
   const [waitingForSpeechGeneration, setWaitingForSpeechGeneration] =
     useState<boolean>(false);
   const [responseOptions, setResponseOptions] = useState<string[]>([]);
+  const [category, setCategory] = useState<string>('');
   const [selectedResponse, setSelectedResponse] = useState<string>('');
   const [fullResponse, setFullResponse] = useState<string>('');
   const [isFrequencyCheckingMode, setIsFrequencyCheckingMode] = useState(false);
@@ -25,6 +36,34 @@ const MainScreen: React.FC = () => {
   const [frequencyModeBackgroundColor, setFrequencyModeBackgroundColor] =
     useState('#000000');
   const [error, setError] = useState('');
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [lastProcessedText, setLastProcessedText] = useState<string>('');
+  const [lastFullResponse, setLastFullResponse] = useState<string>('');
+
+  const handleNewMessage = (role: ChatMessage['role'], text: string) => {
+    setChatHistory(prevHistory => [...prevHistory, {role, text}]);
+  };
+
+  const restartConversation = () => {
+    setChatHistory([]);
+    setProcessedText('');
+    setSelectedResponse('');
+    setFullResponse('');
+  };
+
+  useEffect(() => {
+    if (processedText.length > 0 && processedText !== lastProcessedText) {
+      handleNewMessage('Assistant', processedText);
+      setLastProcessedText(processedText);
+    }
+  }, [processedText]);
+
+  useEffect(() => {
+    if (fullResponse.length > 0 && fullResponse !== lastFullResponse) {
+      handleNewMessage('User', fullResponse);
+      setLastFullResponse(fullResponse);
+    }
+  }, [fullResponse]);
 
   const handleServicePress = (service: string) => {
     if (service === 'More') {
@@ -33,7 +72,9 @@ const MainScreen: React.FC = () => {
         processedText,
         responseOptions,
         setResponseOptions,
+        setCategory,
         setWaitingForResponse,
+        chatHistory,
       );
     }
     if (service === 'Change topic') {
@@ -104,9 +145,11 @@ const MainScreen: React.FC = () => {
                 processedText={processedText}
                 setProcessedText={setProcessedText}
                 setResponseOptions={setResponseOptions}
+                setCategory={setCategory}
                 waitingForResponse={waitingForResponse}
                 setWaitingForResponse={setWaitingForResponse}
                 setError={setError}
+                chatHistory={chatHistory}
               />
             </View>
             <View style={styles.whiteSection}>
@@ -118,6 +161,17 @@ const MainScreen: React.FC = () => {
                 onServicePress={handleServicePress}
                 waitingForResponse={waitingForResponse}
               />
+              {responseOptions.length === 0 && (
+                <>
+                  <ChatHistory history={chatHistory} />
+                  {chatHistory.length > 0 && (
+                    <ServiceButton
+                      text="Restart Conversation"
+                      onPress={restartConversation}
+                    />
+                  )}
+                </>
+              )}
             </View>
             <View style={styles.blueSectionTwo}>
               <ResponseBubble
@@ -128,6 +182,7 @@ const MainScreen: React.FC = () => {
                 waitingForSpeechGeneration={waitingForSpeechGeneration}
                 setWaitingForSpeechGeneration={setWaitingForSpeechGeneration}
                 voice={voice}
+                chatHistory={chatHistory}
               />
             </View>
           </View>

@@ -19,7 +19,11 @@ export const KeywordArea: React.FC<KeywordAreaProps> = ({
   return (
     <View style={styles.container}>
       {waitingForResponse ? (
-        <ActivityIndicator size="large" color="#3A2BB5" />
+        <ActivityIndicator
+          style={styles.activityIndicator}
+          size="large"
+          color="#3A2BB5"
+        />
       ) : (
         <View style={styles.keywordArea}>
           {keyWordsLoaded && (
@@ -80,5 +84,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  activityIndicator: {
+    position: 'absolute',
+    top: 160,
   },
 });

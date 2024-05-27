@@ -3,9 +3,11 @@ export interface InputBubbleProps {
     processedText: string;
     setProcessedText: (text: string) => void;
     setResponseOptions: (responseOptions: string[]) => void;
+    setCategory: (category: string) => void,
     waitingForResponse: boolean;
     setWaitingForResponse: (waitingForResponse: boolean) => void;
     setError: (error: string) => void;
+    chatHistory: ChatMessage[];
   }
   
   export interface KeywordProps {
@@ -32,6 +34,7 @@ export interface InputBubbleProps {
     waitingForSpeechGeneration: boolean;
     setWaitingForSpeechGeneration: (waitingForResponse: boolean) => void;
     voice: string;
+    chatHistory: ChatMessage[];
   }
   
   export interface KeywordAreaProps {
@@ -50,4 +53,14 @@ export interface InputBubbleProps {
   export interface SettingsProps {
     voice: string;
     setVoice: (voice: string) => void;
+  }
+
+
+  export interface ChatMessage {
+    role: 'Assistant' | 'User';
+    text: string;
+  }
+
+  export interface ChatHistoryProps {
+    history: ChatMessage[];
   }

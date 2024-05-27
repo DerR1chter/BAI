@@ -12,7 +12,7 @@ import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
 var Buffer = require('buffer/').Buffer;
 import speaker from '../assets/speaker.png';
-import {fetchSpeech, generateFullResponse} from '../Helpers/OpenAIService';
+import {fetchSpeech, generateFullResponse} from '../Helpers/OpenAIService.ts';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -24,6 +24,7 @@ export const ResponseBubble: React.FC<ResponseBubbleProps> = ({
   waitingForSpeechGeneration,
   setWaitingForSpeechGeneration,
   voice,
+  chatHistory,
 }) => {
   useEffect(() => {
     if (selectedResponse.length > 0) {
@@ -32,6 +33,7 @@ export const ResponseBubble: React.FC<ResponseBubbleProps> = ({
         selectedResponse,
         setFullResponse,
         setWaitingForSpeechGeneration,
+        chatHistory,
       );
     }
   }, [selectedResponse]);
