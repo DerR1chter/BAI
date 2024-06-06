@@ -55,6 +55,7 @@ export const ResponseBubble: React.FC<ResponseBubbleProps> = ({
         'base64',
       );
 
+      await audioRecorderPlayer.stopPlayer();
       await audioRecorderPlayer.startPlayer(audioPath);
       audioRecorderPlayer.addPlayBackListener(e => {
         if (e.currentPosition === e.duration) {
@@ -79,7 +80,8 @@ export const ResponseBubble: React.FC<ResponseBubbleProps> = ({
           <Text style={styles.responseText}>{fullResponse}</Text>
           <TouchableOpacity
             onPress={() => fetchAndPlaySpeech(fullResponse)}
-            disabled={fullResponse.length < 1}>
+            disabled={fullResponse.length < 1}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
             <Image
               source={speaker}
               style={[

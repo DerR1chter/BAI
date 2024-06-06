@@ -1,42 +1,33 @@
-import { useEffect, useRef, useState } from 'react';
-import { Animated } from 'react-native';
+import { useEffect, useState } from 'react';
+import { useSharedValue, withTiming, withRepeat, Easing } from 'react-native-reanimated';
 
 const useFlicker = (frequency: number) => {
-  const flickerAnim = useRef(new Animated.Value(1)).current;
+  const flickerAnim = useSharedValue(1);
   const [isFlickering, setIsFlickering] = useState(false);
-  const animation = Animated.loop(
-    Animated.sequence([
-      Animated.timing(flickerAnim, {
-        toValue: 0,
-        duration: 1000 / frequency / 2,
-        useNativeDriver: true,
-      }),
-      Animated.timing(flickerAnim, {
-        toValue: 1,
-        duration: 1000 / frequency / 2,
-        useNativeDriver: true,
-      }),
-    ])
-  );
+  const frameDuration = 1000 / 60; // Approximate duration for one frame at 60fps
+  const flickerInterval = Math.max(frameDuration, 1000 / frequency / 2); // Ensure interval is at least one frame duration
 
   const startFlickering = () => {
     setIsFlickering(true);
-    animation.start();
+    flickerAnim.value = withRepeat(
+      withTiming(0, { duration: flickerInterval, easing: Easing.linear }),
+      -1,
+      true
+    );
   };
 
   const stopFlickering = () => {
-    animation.stop();
-    flickerAnim.setValue(1);
     setIsFlickering(false);
+    flickerAnim.value = withTiming(1, { duration: frameDuration, easing: Easing.linear });
   };
 
   useEffect(() => {
     if (isFlickering) {
       startFlickering();
-    }
-    return () => {
+    } else {
       stopFlickering();
-    };
+    }
+    return () => stopFlickering();
   }, [isFlickering, frequency]);
 
   return { flickerAnim, isFlickering, startFlickering, stopFlickering };

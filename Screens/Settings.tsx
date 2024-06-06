@@ -14,15 +14,21 @@ import {SettingsButton} from '../Components/SettingsButton';
 import {SettingsProps} from '../types';
 import {useTranslation} from 'react-i18next';
 import APIKeysConfig from '../APIKeysConfig';
+import KnowledgeBaseManager from './KnowledgeBaseManager';
 
-export const Settings: React.FC<SettingsProps> = ({voice, setVoice}) => {
+export const Settings: React.FC<SettingsProps> = ({
+  voice,
+  setVoice,
+  knowledgeBase,
+  setKnowledgeBase,
+}) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleSettingsChange = (newLanguage: string, newVoice: string) => {
     changeLanguage(newLanguage);
     setVoice(newVoice);
-    setModalVisible(false);
   };
+  const [kbModalVisible, setKbModalVisible] = useState(false);
 
   const {t, i18n} = useTranslation();
 
@@ -79,16 +85,28 @@ export const Settings: React.FC<SettingsProps> = ({voice, setVoice}) => {
                 style={(voice === 'female' && styles.selectedLanguage) || {}}
               />
             </View>
-            <Text style={styles.text}>
-              Current API Key: ${APIKeysConfig.openAI}
-            </Text>
+            <Text style={styles.text}>{t('Edit_knowledge_base')}</Text>
+            <SettingsButton
+              text="Manage Knowledge Base"
+              onPress={() => setKbModalVisible(true)}
+              style={{width: 250}}
+            />
           </View>
         </View>
       </Modal>
 
+      <KnowledgeBaseManager
+        knowledgeBase={knowledgeBase}
+        setKnowledgeBase={setKnowledgeBase}
+        modalVisible={kbModalVisible}
+        setModalVisible={setKbModalVisible}
+      />
+
       {/* Settings Icon */}
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
-        {/* Settings icon image */}
+
+      <TouchableOpacity
+        onPress={() => setModalVisible(true)}
+        hitSlop={{top: 20, bottom: 70, left: 50, right: 50}}>
         <Image
           source={settingsIcon}
           style={styles.settingsIcon}
@@ -134,7 +152,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    height: 240,
+    height: 300,
   },
   optionsContainer: {
     display: 'flex',

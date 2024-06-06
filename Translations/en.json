@@ -11,7 +11,23 @@
         "Select_keyword": "Select a keyword for your answer:",
         "Select_language": "Select the language",
         "Select_voice": "Select the voice",
-        "Press_the_button": "Press the start button"
+        "Press_the_button": "Press the start button",
+        "Edit_knowledge_base": "Edit Knowledge Base",
+        "Knowledge_base_manager": "Knowledge Base Manager",
+        "Rename": "Rename",
+        "Remove": "Remove",
+        "Add_new_category": "Add new category",
+        "Add_category": "Add Category",
+        "Reset_the_knowledge_base": "Reset the knowledge base",
+        "Go_back": "Go back",
+        "Add_new": "Add new",
+        "Add_item": "Add Item",
+        "Save": "Save",
+        "Cancel": "Cancel",
+        "Rename_category": "Rename Category",
+        "New_category": "New category name",
+        "Confirm_reset": "Confirm Reset",
+        "Are_you_sure_you_want_to_reset": "Are you sure you want to reset the knowledge base?"
     }
 }
   

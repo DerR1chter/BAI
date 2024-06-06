@@ -31,6 +31,7 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
   setWaitingForResponse,
   setError,
   chatHistory,
+  knowledgeBase,
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -128,6 +129,7 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
       language,
       setError,
       chatHistory,
+      knowledgeBase,
     );
   };
 
@@ -165,7 +167,8 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
       {/* <Text>Level: {soundLevel.toFixed(2)} dB</Text> */}
       <TouchableOpacity
         style={styles.mic}
-        onPress={isRecording ? onStopRecord : onStartRecord}>
+        onPress={isRecording ? onStopRecord : onStartRecord}
+        hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
         <Image
           source={require('../assets/mic.png')}
           style={styles.inputIcon}

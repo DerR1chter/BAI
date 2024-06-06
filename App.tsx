@@ -12,7 +12,7 @@ function App(): React.JSX.Element {
   const backgroundStyle = {
     flex: 1,
   };
-
+  console.log('Hello!');
   return (
     <SafeAreaView style={backgroundStyle}>
       <NavigationContainer>

@@ -1,7 +1,8 @@
 import React from 'react';
-import {TouchableOpacity, Text, StyleSheet, Animated} from 'react-native';
-import {FrequencyProps} from '../types';
+import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
+import Animated, {useAnimatedStyle} from 'react-native-reanimated';
 import useFlicker from '../Helpers/useFlicker';
+import {FrequencyProps} from '../types';
 
 const styles = StyleSheet.create({
   keyword: {
@@ -34,8 +35,14 @@ export const Frequency: React.FC<FrequencyProps> = ({frequency, style}) => {
     }
   };
 
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: flickerAnim.value,
+    };
+  });
+
   return (
-    <Animated.View style={{...styles.keyword, opacity: flickerAnim, ...style}}>
+    <Animated.View style={[styles.keyword, animatedStyle, style]}>
       <TouchableOpacity onPress={handlePress}>
         <Text style={styles.keywordText}>{`${frequency} Hz`}</Text>
       </TouchableOpacity>

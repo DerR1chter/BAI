@@ -30,11 +30,12 @@ const styles = StyleSheet.create({
 export const ServiceButton: React.FC<ServiceButtonProps> = ({
   text,
   onPress,
+  style,
 }) => {
   const none = text === 'Change topic';
   return (
     <TouchableOpacity
-      style={[styles.serviceButton, none && styles.noneButton]}
+      style={[styles.serviceButton, none && styles.noneButton, style]}
       onPress={onPress}>
       <Text style={[styles.serviceButtonText, none && styles.noneText]}>
         {text}

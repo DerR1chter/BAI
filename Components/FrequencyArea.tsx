@@ -14,7 +14,7 @@ export const FrequencyArea: React.FC<FrequencyAreaProps> = ({
   const [isCardsColorSelectingMode, setIsCardsColorSelectingMode] =
     useState(false);
   const [cardsBackgroundColor, setCardsBackgroundColor] = useState('#FFFFFF');
-  const [frequencies, setFrequencies] = useState([6, 10, 15, 20, 30, 60]);
+  const [frequencies, setFrequencies] = useState([10, 12, 15, 20, 30, 60]);
   const [frequencyInput, setFrequencyInput] = useState('');
   const [isFrequencySpecifyingMode, setIsFrequencySpecifyingMode] =
     useState(false);

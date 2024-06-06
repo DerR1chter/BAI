@@ -17,9 +17,13 @@ import {
   regenerateResponseOptions,
 } from '../Helpers/OpenAIService.ts';
 import {useTranslation} from 'react-i18next';
-import {ChatMessage} from '../types';
+import {ChatMessage, KnowledgeBase} from '../types';
 import ChatHistory from '../Components/ChatHistory';
 import {ServiceButton} from '../Components/ServiceButton';
+import {
+  loadKnowledgeBase,
+  saveKnowledgeBase,
+} from '../Helpers/KnowledgeBaseLoader.ts';
 
 const MainScreen: React.FC = () => {
   const [processedText, setProcessedText] = useState<string>('');
@@ -39,6 +43,16 @@ const MainScreen: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [lastProcessedText, setLastProcessedText] = useState<string>('');
   const [lastFullResponse, setLastFullResponse] = useState<string>('');
+  const [knowledgeBase, setKnowledgeBase] = useState<KnowledgeBase>({});
+
+  useEffect(() => {
+    const initializeKnowledgeBase = async () => {
+      const kb = await loadKnowledgeBase();
+      setKnowledgeBase(kb);
+    };
+
+    initializeKnowledgeBase();
+  }, []);
 
   const handleNewMessage = (role: ChatMessage['role'], text: string) => {
     setChatHistory(prevHistory => [...prevHistory, {role, text}]);
@@ -75,6 +89,7 @@ const MainScreen: React.FC = () => {
         setCategory,
         setWaitingForResponse,
         chatHistory,
+        knowledgeBase,
       );
     }
     if (service === 'Change topic') {
@@ -130,7 +145,12 @@ const MainScreen: React.FC = () => {
       ) : (
         <>
           <View style={styles.settingsContainer}>
-            <Settings voice={voice} setVoice={setVoice} />
+            <Settings
+              voice={voice}
+              setVoice={setVoice}
+              knowledgeBase={knowledgeBase}
+              setKnowledgeBase={setKnowledgeBase}
+            />
           </View>
           <View
             style={[
@@ -150,6 +170,7 @@ const MainScreen: React.FC = () => {
                 setWaitingForResponse={setWaitingForResponse}
                 setError={setError}
                 chatHistory={chatHistory}
+                knowledgeBase={knowledgeBase}
               />
             </View>
             <View style={styles.whiteSection}>

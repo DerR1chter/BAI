@@ -1,12 +1,23 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {ScrollView, Text, View, StyleSheet} from 'react-native';
 import {ChatHistoryProps} from '../types';
 
 const ChatHistory: React.FC<ChatHistoryProps> = ({history}) => {
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    scrollViewRef.current?.scrollToEnd({animated: true});
+  }, [history]);
+
   return (
-    <ScrollView style={styles.historyContainer}>
+    <ScrollView style={styles.historyContainer} ref={scrollViewRef}>
       {history.map((item, index) => (
-        <View key={index} style={styles.historyItem}>
+        <View
+          key={index}
+          style={[
+            styles.historyItem,
+            item.role === 'Assistant' ? styles.assistantItem : styles.userItem,
+          ]}>
           <Text style={styles.historyTextRole}>{item.role}: </Text>
           <Text style={styles.historyText}>{item.text}</Text>
         </View>
@@ -19,11 +30,22 @@ const styles = StyleSheet.create({
   historyContainer: {
     width: '100%',
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 0,
   },
   historyItem: {
     flexDirection: 'row',
-    marginBottom: 5,
+    marginVertical: 5,
+  },
+  assistantItem: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+    padding: 10,
+    paddingBottom: 0,
+  },
+  userItem: {
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
+    padding: 10,
   },
   historyTextRole: {
     fontWeight: 'bold',

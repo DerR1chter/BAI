@@ -8,6 +8,7 @@ export interface InputBubbleProps {
     setWaitingForResponse: (waitingForResponse: boolean) => void;
     setError: (error: string) => void;
     chatHistory: ChatMessage[];
+    knowledgeBase: KnowledgeBase;
   }
   
   export interface KeywordProps {
@@ -53,6 +54,8 @@ export interface InputBubbleProps {
   export interface SettingsProps {
     voice: string;
     setVoice: (voice: string) => void;
+    knowledgeBase: KnowledgeBase;
+    setKnowledgeBase: React.Dispatch<React.SetStateAction<KnowledgeBase>>
   }
 
 
@@ -64,3 +67,7 @@ export interface InputBubbleProps {
   export interface ChatHistoryProps {
     history: ChatMessage[];
   }
+
+  export type KnowledgeBase = {
+    [key: string]: string[];
+  };
