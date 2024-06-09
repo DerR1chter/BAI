@@ -2,8 +2,8 @@ import axios from 'axios';
 import APIKeysConfig from '../APIKeysConfig';
 import {ChatMessage, KnowledgeBase} from '../types';
 
-const MODEL_ID =
-  'ft:gpt-3.5-turbo-0613:rg-neuroinformatics:ft-hq-new-default:8sCkSlVq';
+const MODEL_ID = 'gpt-4o';
+// 'ft:gpt-3.5-turbo-0613:rg-neuroinformatics:ft-hq-new-default:8sCkSlVq';
 const TEMPERATURE = 0.3;
 
 export const sendAudioToWhisper = async (
