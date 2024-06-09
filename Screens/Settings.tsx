@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
   },
   selectedLanguage: {
-    backgroundColor: '#3A2BB5',
+    backgroundColor: '#1246AC',
     color: '#FFFFFF',
   },
 });

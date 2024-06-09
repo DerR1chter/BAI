@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import {ResponseBubbleProps} from '../types';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
@@ -77,7 +78,13 @@ export const ResponseBubble: React.FC<ResponseBubbleProps> = ({
         <ActivityIndicator size="large" color="#FFFFFF" />
       ) : (
         <>
-          <Text style={styles.responseText}>{fullResponse}</Text>
+          <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: 'flex-start',
+            }}>
+            <Text style={styles.responseText}>{fullResponse}</Text>
+          </ScrollView>
           <TouchableOpacity
             onPress={() => fetchAndPlaySpeech(fullResponse)}
             disabled={fullResponse.length < 1}
@@ -101,16 +108,18 @@ const styles = StyleSheet.create({
   responseBubble: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    backgroundColor: '#4945BD',
+    backgroundColor: '#2A59B5',
     borderRadius: 25,
     padding: 15,
     paddingRight: 20,
     margin: 10,
-    height: 160,
+    height: '50%',
     marginTop: 20,
     width: '90%',
     display: 'flex',
     alignSelf: 'center',
+    position: 'relative',
+    flexGrow: 1,
   },
   activityIndicator: {
     justifyContent: 'center',
@@ -127,8 +136,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
   },
   responseIcon: {
-    width: 30,
-    height: 30,
+    width: 48,
+    height: 48,
     alignSelf: 'flex-end',
   },
 });

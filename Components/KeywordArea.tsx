@@ -19,16 +19,14 @@ export const KeywordArea: React.FC<KeywordAreaProps> = ({
   return (
     <View style={styles.container}>
       {waitingForResponse ? (
-        <ActivityIndicator
-          style={styles.activityIndicator}
-          size="large"
-          color="#3A2BB5"
-        />
+        <View style={styles.activityIndicator}>
+          <ActivityIndicator size="large" color="#1246AC" />
+        </View>
       ) : (
         <View style={styles.keywordArea}>
-          {keyWordsLoaded && (
+          {/* {keyWordsLoaded && (
             <Text style={styles.text}>{t('Select_keyword')}</Text>
-          )}
+          )} */}
           <View style={styles.grid}>
             {keywords.map((keyword, index) => (
               <View key={index} style={styles.card}>
@@ -36,14 +34,16 @@ export const KeywordArea: React.FC<KeywordAreaProps> = ({
               </View>
             ))}
           </View>
-          <View style={styles.serviceRow}>
+          <View style={styles.serviceGrid}>
             {keyWordsLoaded &&
               services.map((service, index) => (
-                <ServiceButton
-                  key={index}
-                  text={service}
-                  onPress={() => onServicePress(service)}
-                />
+                <View key={index} style={styles.serviceCard}>
+                  <ServiceButton
+                    key={index}
+                    text={service}
+                    onPress={() => onServicePress(service)}
+                  />
+                </View>
               ))}
           </View>
         </View>
@@ -68,8 +68,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    // flexBasis: '48%', // Slightly less than half the container width to fit two items per row
-    marginBottom: 10, // Spacing between the rows
+    width: '40%', // Fixed width in pixels
+    height: '34%', // Fixed height in pixels
+    marginLeft: 5, // Spacing between cards
+    marginRight: 5, // Spacing between cards
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
     color: '#000000',
@@ -78,15 +82,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
-  serviceRow: {
+  serviceGrid: {
     marginTop: 20,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  serviceCard: {
+    width: '40%', // Fixed width in pixels
+    height: '40%', // Fixed height in pixels
+    marginLeft: 5, // Spacing between cards
+    marginRight: 5, // Spacing between cards
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   activityIndicator: {
-    position: 'absolute',
-    top: 160,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

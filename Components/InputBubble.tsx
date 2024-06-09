@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   PermissionsAndroid,
+  ScrollView,
 } from 'react-native';
 import AudioRecorderPlayer, {
   AVEncoderAudioQualityIOSType,
@@ -69,7 +70,7 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
     const updateSoundLevel = (level: number) => {
       // Normalize level from -200 to 0 dB to a scale of 0 to 100 for display purposes
       const normalizedLevel = (level + 200) / 2;
-      const newHeight = Math.max(0, normalizedLevel * 0.18);
+      const newHeight = Math.max(0, normalizedLevel * 0.4);
       Animated.timing(soundLevelAnim, {
         toValue: newHeight,
         duration: 100,
@@ -160,9 +161,15 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
 
   return (
     <View style={styles.inputBubble}>
-      <Text style={styles.inputText}>
-        {processedText.length > 0 ? processedText : text}
-      </Text>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: 'flex-start',
+        }}>
+        <Text style={styles.inputText}>
+          {processedText.length > 0 ? processedText : text}
+        </Text>
+      </ScrollView>
       {isRecording && <Text style={styles.timerText}>{recordTime}</Text>}
       {/* <Text>Level: {soundLevel.toFixed(2)} dB</Text> */}
       <TouchableOpacity
@@ -177,22 +184,22 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
         <Animated.View
           style={{
             position: 'absolute',
-            width: '30%',
-            bottom: 10,
+            width: '41%',
+            bottom: 12,
             zIndex: 1,
             height: soundLevelAnim,
-            borderRadius: 30,
+            borderRadius: 100,
             backgroundColor: 'rgba(72, 68, 189, 0.6)',
           }}
         />
       </TouchableOpacity>
-      {audioPath && !isRecording && (
+      {/* {audioPath && !isRecording && (
         <TouchableOpacity style={styles.playbackButton} onPress={onPlayAudio}>
           <Text style={styles.playbackText}>
             {isPlaying ? t('Stop') : t('Play')}
           </Text>
         </TouchableOpacity>
-      )}
+      )} */}
     </View>
   );
 };
@@ -201,17 +208,19 @@ const styles = StyleSheet.create({
   inputBubble: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    backgroundColor: '#4945BD',
+    backgroundColor: '#2A59B5',
     borderRadius: 25,
     padding: 15,
     paddingRight: 20,
     margin: 10,
-    height: 130,
+    height: '75%',
     marginTop: 20,
     width: '90%',
     display: 'flex',
     alignSelf: 'center',
     position: 'relative',
+    flexGrow: 1,
+    marginBottom: 20,
   },
   inputText: {
     flex: 1,
@@ -221,8 +230,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
   },
   inputIcon: {
-    width: 30,
-    height: 30,
+    width: 48,
+    height: 48,
     alignSelf: 'flex-end',
   },
   timerText: {

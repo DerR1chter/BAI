@@ -1,6 +1,13 @@
 // KeywordArea.tsx
 import React, {useState} from 'react';
-import {View, StyleSheet, Text, Switch, TextInput} from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  Switch,
+  TextInput,
+} from 'react-native';
 import {FrequencyAreaProps} from '../types';
 import {Frequency} from './Frequency';
 import {ColorPicker} from 'react-native-color-picker';
@@ -52,7 +59,7 @@ export const FrequencyArea: React.FC<FrequencyAreaProps> = ({
         <Text style={styles.switchLabel}>{t('Background_color_mode')}</Text>
         <Switch
           trackColor={{false: '#FFFFFF', true: '#FFFFFF'}}
-          thumbColor={'#7A82E2'}
+          thumbColor={'#668EDA'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={newValue => {
             setIsColorSelectingMode(newValue);
@@ -66,7 +73,7 @@ export const FrequencyArea: React.FC<FrequencyAreaProps> = ({
         <Text style={styles.switchLabel}>{t('Cards_color_mode')}</Text>
         <Switch
           trackColor={{false: '#FFFFFF', true: '#FFFFFF'}}
-          thumbColor={'#7A82E2'}
+          thumbColor={'#668EDA'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={newValue => {
             setIsCardsColorSelectingMode(newValue);
@@ -80,7 +87,7 @@ export const FrequencyArea: React.FC<FrequencyAreaProps> = ({
         <Text style={styles.switchLabel}>{t('Frequency_specifying_mode')}</Text>
         <Switch
           trackColor={{false: '#FFFFFF', true: '#FFFFFF'}}
-          thumbColor={'#7A82E2'}
+          thumbColor={'#668EDA'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={toggleFrequencySpecifyingMode}
           value={isFrequencySpecifyingMode}
@@ -107,7 +114,7 @@ export const FrequencyArea: React.FC<FrequencyAreaProps> = ({
           onSubmitEditing={submitFrequencies}
         />
       ) : (
-        <View style={styles.keywordArea}>
+        <ScrollView style={styles.keywordArea}>
           <View style={styles.grid}>
             {frequencies.map((frequency, index) => (
               <View key={index} style={styles.card}>
@@ -118,7 +125,7 @@ export const FrequencyArea: React.FC<FrequencyAreaProps> = ({
               </View>
             ))}
           </View>
-        </View>
+        </ScrollView>
       )}
     </View>
   );

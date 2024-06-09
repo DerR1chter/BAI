@@ -41,6 +41,7 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
   const [confirmResetVisible, setConfirmResetVisible] = useState(false);
   const {t} = useTranslation();
 
+  console.log('knowledgeBase: ', knowledgeBase);
   const handleAddItem = () => {
     if (newItem.trim() && selectedCategory) {
       setKnowledgeBase((prevKnowledgeBase: KnowledgeBase): KnowledgeBase => {
@@ -170,12 +171,10 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
                             setSelectedCategory(item);
                             setIsRename(true);
                           }}
-                          style={{width: 110}}
                         />
                         <ServiceButton
                           text={t('Remove')}
                           onPress={() => handleRemoveCategory(item)}
-                          style={{width: 110}}
                         />
                       </View>
                     </View>
@@ -217,7 +216,6 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
                       <ServiceButton
                         text={t('Remove')}
                         onPress={() => handleRemoveItem(item)}
-                        style={{width: 120}}
                       />
                     </View>
                   )}

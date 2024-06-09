@@ -1,10 +1,10 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native';
-import {ServiceButtonProps} from '../types';
+import {SettingsButtonProps} from '../types';
 
 const styles = StyleSheet.create({
   serviceButton: {
-    backgroundColor: '#7A82E2',
+    backgroundColor: '#668EDA',
     borderRadius: 30,
     paddingVertical: 8,
     paddingHorizontal: 16,
@@ -27,19 +27,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export const SettingsButton: React.FC<ServiceButtonProps> = ({
+export const SettingsButton: React.FC<SettingsButtonProps> = ({
   text,
   onPress,
   style = {},
 }) => {
-  const none = text === 'Change topic';
   return (
-    <TouchableOpacity
-      style={[styles.serviceButton, style, none && styles.noneButton]}
-      onPress={onPress}>
-      <Text style={[styles.serviceButtonText, none && styles.noneText]}>
-        {text}
-      </Text>
+    <TouchableOpacity style={[styles.serviceButton, style]} onPress={onPress}>
+      <Text style={[styles.serviceButtonText]}>{text}</Text>
     </TouchableOpacity>
   );
 };

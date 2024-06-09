@@ -24,6 +24,7 @@ import {
   loadKnowledgeBase,
   saveKnowledgeBase,
 } from '../Helpers/KnowledgeBaseLoader.ts';
+import KnowledgeBaseManager from './KnowledgeBaseManager.tsx';
 
 const MainScreen: React.FC = () => {
   const [processedText, setProcessedText] = useState<string>('');
@@ -107,9 +108,10 @@ const MainScreen: React.FC = () => {
   useEffect(() => {
     if (waitingForResponse) {
       setFullResponse('');
-    } else if (waitingForSpeechGeneration) {
-      setResponseOptions([]);
     }
+    // else if (waitingForSpeechGeneration) {
+    //   setResponseOptions([]);
+    // }
   }, [waitingForResponse, waitingForSpeechGeneration]);
 
   const {t} = useTranslation();
@@ -126,7 +128,7 @@ const MainScreen: React.FC = () => {
         <Text style={styles.switchLabel}>{t('Frequency_checking_mode')}</Text>
         <Switch
           trackColor={{false: '#FFFFFF', true: '#FFFFFF'}}
-          thumbColor={isFrequencyCheckingMode ? '#7A82E2' : '#7A82E2'}
+          thumbColor={'#668EDA'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={newValue => {
             setProcessedText('');
@@ -158,7 +160,7 @@ const MainScreen: React.FC = () => {
               modalVisible && styles.mainContainerCovered,
             ]}>
             <View style={styles.blueSectionOne}>
-              <Text style={styles.eegchat}>EEGChat</Text>
+              {/* <Text style={styles.eegchat}>EEGChat</Text> */}
 
               <InputBubble
                 text={t('Press_the_mic')}
@@ -175,14 +177,20 @@ const MainScreen: React.FC = () => {
             </View>
             <View style={styles.whiteSection}>
               {error.length > 0 && <Text>{error}</Text>}
-              <KeywordArea
+              <KnowledgeBaseManager
+                knowledgeBase={knowledgeBase}
+                setKnowledgeBase={setKnowledgeBase}
+                modalVisible={true}
+                setModalVisible={() => {}}
+              />
+              {/* <KeywordArea
                 keywords={responseOptions}
                 onKeywordPress={setSelectedResponse}
-                services={['Change topic', 'More']}
+                services={['Correction', 'More', 'None', 'Finished']}
                 onServicePress={handleServicePress}
                 waitingForResponse={waitingForResponse}
-              />
-              {responseOptions.length === 0 && (
+              /> */}
+              {/* {responseOptions.length === 0 && (
                 <>
                   <ChatHistory history={chatHistory} />
                   {chatHistory.length > 0 && (
@@ -192,7 +200,7 @@ const MainScreen: React.FC = () => {
                     />
                   )}
                 </>
-              )}
+              )} */}
             </View>
             <View style={styles.blueSectionTwo}>
               <ResponseBubble
@@ -220,11 +228,10 @@ const styles = StyleSheet.create({
   },
   settingsContainer: {
     display: 'flex',
-    backgroundColor: '#3B29B5',
+    backgroundColor: '#1246AC',
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
+    top: -10,
+    right: -10,
     zIndex: 1,
   },
   mainContainer: {
@@ -232,7 +239,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    backgroundColor: '#3B29B5',
+    backgroundColor: '#1246AC',
   },
   mainContainerCovered: {
     flex: 1,
@@ -245,28 +252,29 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#FFFFFF',
     alignSelf: 'center',
-    marginTop: '5%',
+    // marginTop: '5%',
     fontFamily: 'Montserrat-Medium',
   },
   blueSectionOne: {
-    backgroundColor: '#3B29B5',
+    backgroundColor: '#1246AC',
     flex: 1,
-    marginBottom: 30,
+    alignItems: 'center',
+    // marginBottom: 30,
   },
   whiteSection: {
-    flex: 2,
+    flex: 2.2,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
   blueSectionTwo: {
-    backgroundColor: '#3B29B5',
-    flex: 1,
+    backgroundColor: '#1246AC',
+    flex: 0.8,
   },
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3A2BB5',
+    backgroundColor: '#1246AC',
   },
   switchFreqContainer: {
     flexDirection: 'row',

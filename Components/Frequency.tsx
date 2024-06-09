@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   keywordText: {
-    color: '#3B29B5',
+    color: '#1246AC',
     fontSize: 16,
     fontFamily: 'Montserrat-Bold',
     textAlign: 'center',

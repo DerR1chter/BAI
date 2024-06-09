@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#3B29B5',
+    backgroundColor: '#1246AC',
   },
   eegchat: {
     fontSize: 24,
