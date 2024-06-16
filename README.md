@@ -120,9 +120,9 @@ or
 ```
 on Windows.
 
-You’ll find the APK file in the following path:
+The APK file can be found the following path:
 ```
-yourProject/android/app/build/outputs/apk/debug/app-debug.apk
+eegchat/android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ## Congratulations!
