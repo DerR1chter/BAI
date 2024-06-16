@@ -69,8 +69,9 @@ export const sendAudioToWhisper = async (
       knowledgeBase,
     );
   } catch (error) {
-    setError(`Error processing audio file, ${error}`);
+    setError(`Plese, try again.`);
     console.error('Error processing audio file:', error);
+    setWaitingForResponse(false);
   }
 };
 

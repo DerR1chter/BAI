@@ -7,6 +7,7 @@ import {
   Image,
   PermissionsAndroid,
   ScrollView,
+  Alert,
 } from 'react-native';
 import AudioRecorderPlayer, {
   AVEncoderAudioQualityIOSType,
@@ -48,6 +49,7 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
   const [isMonitoringStarted, setIsMonitoringStarted] = useState(false);
   const {t, i18n} = useTranslation();
   const language = i18n?.language;
+  const MAX_RECORDING_DURATION = 60000; // 1 minute
 
   // Request microphone permission and set up sound level monitoring
   useEffect(() => {
@@ -63,20 +65,26 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
             buttonPositive: 'OK',
           },
         );
+        /* Uncomment for debugging
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           console.log('Microphone permission granted');
         } else {
           console.log('Microphone permission denied');
         }
+        */
       } catch (err) {
         console.warn(err);
       }
     };
 
     const updateSoundLevel = (level: number) => {
-      // Normalize level from -200 to 0 dB to a scale of 0 to 100 for display purposes
-      const normalizedLevel = (level + 200) / 2;
-      const newHeight = Math.max(0, normalizedLevel * 0.4);
+      // Ensure level is within a reasonable range to avoid extreme values
+      const clampedLevel = Math.max(-200, Math.min(0, level));
+
+      // Apply a logarithmic scale to normalize the sound level
+      const normalizedLevel = (Math.log10(clampedLevel + 201) - 2) * 50;
+
+      const newHeight = Math.max(0, normalizedLevel * 2.5); // Scale the height
       Animated.timing(soundLevelAnim, {
         toValue: newHeight,
         duration: 100,
@@ -106,37 +114,62 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
       AVEncoderAudioQualityIOS: AVEncoderAudioQualityIOSType.high,
       AVNumberOfChannelsIOS: 2,
     };
-    const uri = await audioRecorderPlayer.startRecorder(path, audioSet);
-    setAudioPath(uri);
-    setIsRecording(true);
-    RNSoundLevel.start();
-    setIsMonitoringStarted(true);
-    audioRecorderPlayer.addRecordBackListener(e => {
-      setRecordTime(formatTime(Math.floor(e.currentPosition / 1000)));
-      return;
-    });
+
+    try {
+      const uri = await audioRecorderPlayer.startRecorder(path, audioSet);
+      setAudioPath(uri);
+      setIsRecording(true);
+      RNSoundLevel.start();
+      setIsMonitoringStarted(true);
+
+      audioRecorderPlayer.addRecordBackListener(e => {
+        setRecordTime(formatTime(Math.floor(e.currentPosition / 1000)));
+        if (e.currentPosition >= MAX_RECORDING_DURATION) {
+          onStopRecord();
+        }
+        return;
+      });
+    } catch (error) {
+      console.error('Error starting recorder:', error);
+      setIsRecording(false);
+      Alert.alert(
+        'Recording Error',
+        'An error occurred while starting the recorder.',
+      );
+    }
   };
 
   /**
    * Stops audio recording and sends the audio to the Whisper service.
    */
   const onStopRecord = async () => {
-    await audioRecorderPlayer.stopRecorder();
-    audioRecorderPlayer.removeRecordBackListener();
-    setIsRecording(false);
-    RNSoundLevel.stop();
-    soundLevelAnim.setValue(0);
-    sendAudioToWhisper(
-      audioPath,
-      setProcessedText,
-      setResponseOptions,
-      setCategory,
-      setWaitingForResponse,
-      language,
-      setError,
-      chatHistory,
-      knowledgeBase,
-    );
+    try {
+      const result = await audioRecorderPlayer.stopRecorder();
+      audioRecorderPlayer.removeRecordBackListener();
+      setIsRecording(false);
+      RNSoundLevel.stop();
+      soundLevelAnim.setValue(0);
+      setIsMonitoringStarted(false);
+
+      // Process the recorded audio
+      sendAudioToWhisper(
+        audioPath,
+        setProcessedText,
+        setResponseOptions,
+        setCategory,
+        setWaitingForResponse,
+        language,
+        setError,
+        chatHistory,
+        knowledgeBase,
+      );
+    } catch (error) {
+      console.error('Error stopping recorder:', error);
+      Alert.alert(
+        'Recording Error',
+        'An error occurred while stopping the recorder.',
+      );
+    }
   };
 
   /**
@@ -201,7 +234,7 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
         <Animated.View
           style={{
             position: 'absolute',
-            width: '41%',
+            width: 21,
             bottom: 12,
             zIndex: 1,
             height: soundLevelAnim,

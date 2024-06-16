@@ -26,6 +26,7 @@ This repository presents a smartphone application for a Conversational Brain-Art
 ### Step 2: Configure Environment Variables
 
 1. **Set `ANDROID_HOME` Environment Variable**:
+
    - For **Windows**:
      ```
      setx ANDROID_HOME "C:\path\to\your\Android\Sdk"
@@ -55,12 +56,14 @@ This repository presents a smartphone application for a Conversational Brain-Art
 ### Step 4: Clone the Project Repository
 
 1. **Clone the Repository**:
+
    ```
    git clone https://github.com/YehorChulkov/BAI.git
    cd BAI
    ```
 
 2. **Add API Key**:
+
    - Insert the OpenAI API key into `APIKeysConfig.js` in the "Configs" folder.
 
 3. **Install Dependencies**:
@@ -77,10 +80,10 @@ This repository presents a smartphone application for a Conversational Brain-Art
 
 ### Step 6: Choose the operating system to run on
 
-   ```
-a — for Android  
+```
+a — for Android
 i — for iOs (available on MacOS only)
-   ```
+```
 
 If everything is set up correctly, you should see the app running in the Android Emulator or iOS Simulator (MacOS only).
 
@@ -89,7 +92,6 @@ If everything is set up correctly, you should see the app running in the Android
 1. **Download the APK file from GitHub** and transfer it to your device.
 2. **Install the APK** using the file manager on the device.
 3. **Start the app** from the installed apps list.
-
 
 # Generating an APK
 
@@ -110,17 +112,21 @@ cd android
 ```
 
 ### Step 3: Assemble the Debug APK
-On Linux/MacOs
+
+On Linux/MacOs:
+
 ```
 ./gradlew assembleDebug
 ```
-or
+
+or on Windows:
+
 ```
 .\gradlew assembleDebug
 ```
-on Windows.
 
 The APK file can be found the following path:
+
 ```
 eegchat/android/app/build/outputs/apk/debug/app-debug.apk
 ```
@@ -128,4 +134,3 @@ eegchat/android/app/build/outputs/apk/debug/app-debug.apk
 ## Congratulations!
 
 You've successfully run the app! 🥳
-
