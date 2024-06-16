@@ -1,5 +1,5 @@
 // RNTFlickerPackage.kt
-package com.awesomeproject
+package com.eegchat
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule

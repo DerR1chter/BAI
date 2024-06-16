@@ -1,11 +1,24 @@
 import axios from 'axios';
-import APIKeysConfig from '../APIKeysConfig';
+import APIKeysConfig from '../Configs/APIKeysConfig';
 import {ChatMessage, KnowledgeBase} from '../types';
+import promptConfig from '../Configs/promptConfig';
 
-const MODEL_ID = 'gpt-4o';
-// 'ft:gpt-3.5-turbo-0613:rg-neuroinformatics:ft-hq-new-default:8sCkSlVq';
+const MODEL_ID =
+  'ft:gpt-3.5-turbo-0613:rg-neuroinformatics:ft-hq-new-default:8sCkSlVq';
 const TEMPERATURE = 0.3;
 
+/**
+ * Sends an audio file to the Whisper API for transcription.
+ * @param {string} filePath - The path to the audio file.
+ * @param {(text: string) => void} setProcessedText - Function to set the processed text.
+ * @param {(responseOptions: string[]) => void} setResponseOptions - Function to set response options.
+ * @param {(category: string) => void} setCategory - Function to set the response category.
+ * @param {(waitingForResponse: boolean) => void} setWaitingForResponse - Function to set the waiting state.
+ * @param {string} language - The language of the audio file.
+ * @param {(error: string) => void} setError - Function to set the error message.
+ * @param {ChatMessage[]} chatHistory - The chat history.
+ * @param {KnowledgeBase} knowledgeBase - The knowledge base.
+ */
 export const sendAudioToWhisper = async (
   filePath: string,
   setProcessedText: (text: string) => void,
@@ -55,18 +68,24 @@ export const sendAudioToWhisper = async (
       chatHistory,
       knowledgeBase,
     );
-    console.log('Transcript: ', transcript);
   } catch (error) {
     setError(`Error processing audio file, ${error}`);
     console.error('Error processing audio file:', error);
   }
 };
 
+/**
+ * Sends a message to the ChatGPT API and returns the response options.
+ * @param {Array<{role: string; content: string}>} messages - The messages to send.
+ * @param {(waitingForResponse: boolean) => void} setWaitingForResponse - Function to set the waiting state.
+ * @param {boolean} [useFineTunedModel=false] - Whether to use the fine-tuned model.
+ * @returns {Promise<string>} The response options.
+ */
 const sendMessageToChatGPT = async (
   messages: {role: string; content: string}[],
   setWaitingForResponse: (waitingForResponse: boolean) => void,
   useFineTunedModel: boolean = false,
-) => {
+): Promise<string | undefined> => {
   try {
     setWaitingForResponse(true);
     const response = await axios({
@@ -85,14 +104,24 @@ const sendMessageToChatGPT = async (
         stop: null,
       },
     });
-    console.log('Response: ', response.data.choices);
     const options = response.data.choices[0].message.content;
     return options;
   } catch (error) {
     console.error('Error generating response options:', error);
+    return undefined;
   }
 };
 
+/**
+ * Generates response options based on the transcript and updates the state.
+ * @param {string} transcript - The transcript of the audio.
+ * @param {(options: string[]) => void} setResponseOptions - Function to set response options.
+ * @param {(category: string) => void} setCategory - Function to set the response category.
+ * @param {(waitingForResponse: boolean) => void} setWaitingForResponse - Function to set the waiting state.
+ * @param {ChatMessage[]} chatHistory - The chat history.
+ * @param {KnowledgeBase} knowledgeBase - The knowledge base.
+ * @param {number} retryCount - The current retry count.
+ */
 const generateResponseOptions = async (
   transcript: string,
   setResponseOptions: (options: string[]) => void,
@@ -100,42 +129,18 @@ const generateResponseOptions = async (
   setWaitingForResponse: (waitingForResponse: boolean) => void,
   chatHistory: ChatMessage[],
   knowledgeBase: KnowledgeBase,
+  retryCount: number = 0,
 ) => {
-  console.log('chatHistory: ', chatHistory);
+  if (retryCount > 3) {
+    console.error(
+      'Max retry attempts reached. Cannot generate response options.',
+    );
+    setWaitingForResponse(false);
+    return;
+  }
+
   const historyMessages = constructMessage(chatHistory);
-  const prompt = `Generate N keywords that might help a speech-impaired person respond to a given question. The keywords should be as short as possible and only describe one possible answer each. Provide answers which are as different as possible and try to include every viewpoint in the answers. For example if one of the answers is yes, also include no, and when one of the answers is good, also include bad. When the question is asking for a day or time, be specific in your suggested answers. In addition to suggesting answers, also provide the category of what the question is asking for. For example, if the question is asking for the name of a person, the category should be NAME. If the question is asking for an address or street name, the category should be ADDRESS. Make the category as simple as possible, for instance: CAR for the question "What car do you drive?" instead if VEHICLE BRAND. Here are some examples:
-
-  Example 1:
-  Question: How was your day?
-  N: 6
-  Answers: 1. Good; 2. Fantastic; 3. Bad; 4. Horrible; 5. Splendid; 6. Boring
-  Category: ADJECTIVE
-  Example 2:
-  Question: How many people are living in your household?
-  N: 10
-  Answers: 1. 1; 2. 2; 3. 3; 4. 4; 5. 5; 6. 6; 7. 7; 8. 8; 9. 9; 10. 10
-  Category: NUMBER
-  Example 3:
-  Question: What is your mother's name?
-  N: 4
-  Answers: 1. Rose; 2. Mary; 3. Miriam; 4. Joanna
-  Category: NAME
-  Example 4:
-  Question: Are you hungry?
-  N: 3
-  Answers: 1. Yes; 2. No; 3. Very
-  Category: YESNO
-  Example 5:
-  Question: Where do you live?
-  N: 6
-  Answers: 1. New York; 2. Los Angeles; 3. Chicago; 4. Miami; 5. San Francisco; 6. Seattle
-  Category: ADDRESS
-  
-  N = 6
-
-  ALWAYS provide the answers as a list of SINGLE words, not numerated and separated by comma. Here is an example of a response: "Answers: Good, Bad, Great, Terrible, Okay, Tired
-  Category: ADJECTIVE". This format of the response has to be like this all the times without exceptions. Take the conversation history into account, if provided. If no question is provided, just generate universal keywords like "I see" or "Interesting".
-  `;
+  const prompt = promptConfig.prompt;
   const messages = [
     {
       role: 'system',
@@ -151,20 +156,12 @@ const generateResponseOptions = async (
       content: transcript,
     },
   ];
+
   chatHistory.pop();
   const response = await sendMessageToChatGPT(messages, setWaitingForResponse);
-  try {
-    let {options, category} = parseResponse(response);
-    // const options = response.split(',').map((option: string) => option.trim());
-    if (knowledgeBase[category as keyof typeof knowledgeBase]) {
-      options = knowledgeBase[category as keyof typeof knowledgeBase];
-      // pick 6 random options
-      options = options.slice(0, 6);
-    }
-    setResponseOptions(options);
-    setCategory(category);
-    setWaitingForResponse(false);
-  } catch (error) {
+
+  if (response === undefined) {
+    console.error('Error in generating response options. Retrying...');
     generateResponseOptions(
       transcript,
       setResponseOptions,
@@ -172,10 +169,44 @@ const generateResponseOptions = async (
       setWaitingForResponse,
       chatHistory,
       knowledgeBase,
+      retryCount + 1,
+    );
+    return;
+  }
+
+  try {
+    let {options, category} = parseResponse(response);
+    if (knowledgeBase[category as keyof typeof knowledgeBase]) {
+      options = knowledgeBase[category as keyof typeof knowledgeBase];
+      options = options.slice(0, 6);
+    }
+    setResponseOptions(options);
+    setCategory(category);
+    setWaitingForResponse(false);
+  } catch (error) {
+    console.error('Error parsing response:', error);
+    generateResponseOptions(
+      transcript,
+      setResponseOptions,
+      setCategory,
+      setWaitingForResponse,
+      chatHistory,
+      knowledgeBase,
+      retryCount + 1,
     );
   }
 };
 
+/**
+ * Regenerates response options based on the original request and updates the state.
+ * @param {string} originalRequest - The original request.
+ * @param {string[]} providedResponse - The provided response options.
+ * @param {(options: string[]) => void} setResponseOptions - Function to set response options.
+ * @param {(category: string) => void} setCategory - Function to set the response category.
+ * @param {(waitingForResponse: boolean) => void} setWaitingForResponse - Function to set the waiting state.
+ * @param {ChatMessage[]} chatHistory - The chat history.
+ * @param {KnowledgeBase} knowledgeBase - The knowledge base.
+ */
 export const regenerateResponseOptions = async (
   originalRequest: string,
   providedResponse: string[],
@@ -199,6 +230,14 @@ export const regenerateResponseOptions = async (
   );
 };
 
+/**
+ * Generates a full response based on the question and selected answer, then updates the state.
+ * @param {string} questionArg - The question asked.
+ * @param {string} answer - The selected answer.
+ * @param {(fullResponse: string) => void} setFullResponse - Function to set the full response.
+ * @param {(waitingForResponse: boolean) => void} setWaitingForSpeechGeneration - Function to set the waiting state.
+ * @param {ChatMessage[]} chatHistory - The chat history.
+ */
 export const generateFullResponse = async (
   questionArg: string,
   answer: string,
@@ -206,50 +245,41 @@ export const generateFullResponse = async (
   setWaitingForSpeechGeneration: (waitingForResponse: boolean) => void,
   chatHistory: ChatMessage[],
 ) => {
-  const formatedChatHistory = formatChatHistory(chatHistory);
-  console.log('formatedChatHistory: ', formatedChatHistory);
-  const prompt = `${formatedChatHistory}}
+  const formattedChatHistory = formatChatHistory(chatHistory);
+  const prompt = `${formattedChatHistory}
     Question: ${questionArg}
     Keywords: ${answer}
     Answer:\n\n###\n\n`;
+
   const response = await sendMessageToChatGPT(
     [{role: 'user', content: prompt}],
     setWaitingForSpeechGeneration,
     true,
   );
-  const fullResponse = response.replace(/ END$/, '').trim();
-  setFullResponse(fullResponse);
+
+  if (response === undefined) {
+    console.error('Failed to generate a full response.');
+    setFullResponse(
+      'There was an error generating response. Please try again.',
+    );
+  } else {
+    const fullResponse = response.replace(/ END$/, '').trim();
+    setFullResponse(fullResponse);
+  }
+
   setWaitingForSpeechGeneration(false);
 };
 
-export const generateAnswerForChangingTopic = async (
-  originalRequest: string,
-  providedResponse: string[],
-  setFullResponse: (fullResponse: string) => void,
-  setWaitingForSpeechGeneration: (waitingForSpeechGeneration: boolean) => void,
-) => {
-  const messages = [
-    {
-      role: 'system',
-      content:
-        "You are a helpful assistant helping a disabled person to generate a full sentence based on a selected keyword. When generating responses, always adopt the perspective of the person who chose the response word, not the AI's perspective. The user has asked to change the topic. You should generate a complete sentece that indicates the intention to change the topic. Do not suggest any new topics, just show the wish to change it. Here is the original question you need to mention: ",
-    },
-    {
-      role: 'user',
-      content: originalRequest,
-    },
-  ];
-  const response = await sendMessageToChatGPT(
-    messages,
-    setWaitingForSpeechGeneration,
-  );
-  const fullResponse = response.trim();
-  setFullResponse(fullResponse);
-  setWaitingForSpeechGeneration(false);
-};
-
-export const fetchSpeech = async (text: string, voice: string) => {
-  console.log('Text: ', text);
+/**
+ * Fetches speech audio for the given text.
+ * @param {string} text - The text to convert to speech.
+ * @param {string} voice - The voice to use for the speech.
+ * @returns {Promise<any>} The speech audio data.
+ */
+export const fetchSpeech = async (
+  text: string,
+  voice: string,
+): Promise<any> => {
   return await axios.post(
     'https://api.openai.com/v1/audio/speech',
     {
@@ -267,7 +297,14 @@ export const fetchSpeech = async (text: string, voice: string) => {
   );
 };
 
-const constructMessage = (chatHistory: ChatMessage[]) => {
+/**
+ * Constructs messages from the chat history.
+ * @param {ChatMessage[]} chatHistory - The chat history.
+ * @returns {Array<{role: string; content: string}>} The constructed messages.
+ */
+const constructMessage = (
+  chatHistory: ChatMessage[],
+): {role: string; content: string}[] => {
   const startMarker = {
     role: 'user',
     content: 'Conversation history begin:',
@@ -286,7 +323,15 @@ const constructMessage = (chatHistory: ChatMessage[]) => {
   return [startMarker, ...historyMessages, endMarker];
 };
 
-const parseResponse = (responseContent: string) => {
+/**
+ * Parses the response from the ChatGPT API to extract options and category.
+ * @param {string} responseContent - The response content from the API.
+ * @returns {{options: string[], category: string}} The parsed options and category.
+ * @throws {Error} If the response format is incorrect.
+ */
+const parseResponse = (
+  responseContent: string,
+): {options: string[]; category: string} => {
   const answersMatch = responseContent.match(
     /Answers: ([\s\S]*?)\nCategory: ([\s\S]*)/,
   );
@@ -299,6 +344,11 @@ const parseResponse = (responseContent: string) => {
   }
 };
 
+/**
+ * Formats the chat history into a string.
+ * @param {ChatMessage[]} chatHistory - The chat history.
+ * @returns {string} The formatted chat history.
+ */
 const formatChatHistory = (chatHistory: ChatMessage[]): string => {
   return chatHistory
     .map((message, index) => {

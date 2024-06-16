@@ -28,7 +28,9 @@ export type SettingType =
   | 'German'
   | 'Male'
   | 'Female'
-  | 'Manage Knowledge Base';
+  | 'Manage Knowledge Base'
+  | 'Yes'
+  | 'No';
 
 export interface ServiceButtonProps {
   text: ServiceType;
@@ -69,6 +71,8 @@ export interface FrequencyAreaProps {
 export interface SettingsProps {
   voice: string;
   setVoice: (voice: string) => void;
+  isFrequencyCheckingMode: boolean;
+  setIsFrequencyCheckingMode: (isFrequencyCheckingMode: boolean) => void;
   knowledgeBase: KnowledgeBase;
   setKnowledgeBase: React.Dispatch<React.SetStateAction<KnowledgeBase>>;
 }
@@ -85,3 +89,19 @@ export interface ChatHistoryProps {
 export type KnowledgeBase = {
   [key: string]: string[];
 };
+
+export interface ConfirmationModalProps {
+  visible: boolean;
+  onRequestClose: () => void;
+  onConfirm: () => void;
+  onCancel: () => void;
+  title: string;
+  message: string;
+}
+
+export interface KnowledgeBaseManagerProps {
+  knowledgeBase: KnowledgeBase;
+  setKnowledgeBase: React.Dispatch<React.SetStateAction<KnowledgeBase>>;
+  modalVisible: boolean;
+  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+}

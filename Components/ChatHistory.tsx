@@ -2,7 +2,14 @@ import React, {useEffect, useRef} from 'react';
 import {ScrollView, Text, View, StyleSheet} from 'react-native';
 import {ChatHistoryProps} from '../types';
 
-const ChatHistory: React.FC<ChatHistoryProps> = ({history}) => {
+/**
+ * ChatHistory component - Displays the chat history.
+ * @param {ChatHistoryProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
+const ChatHistory: React.FC<ChatHistoryProps> = ({
+  history,
+}: ChatHistoryProps): JSX.Element => {
   const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -26,6 +33,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({history}) => {
   );
 };
 
+// Styles for the ChatHistory component
 const styles = StyleSheet.create({
   historyContainer: {
     width: '100%',

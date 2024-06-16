@@ -13,27 +13,39 @@ import closeIcon from '../assets/close.png';
 import {SettingsButton} from '../Components/SettingsButton';
 import {SettingsProps} from '../types';
 import {useTranslation} from 'react-i18next';
-import APIKeysConfig from '../APIKeysConfig';
 import KnowledgeBaseManager from './KnowledgeBaseManager';
 
+/**
+ * Settings component - Manages app settings including language, voice, frequency mode, and knowledge base.
+ * @param {SettingsProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const Settings: React.FC<SettingsProps> = ({
   voice,
   setVoice,
+  isFrequencyCheckingMode,
+  setIsFrequencyCheckingMode,
   knowledgeBase,
   setKnowledgeBase,
-}) => {
+}: SettingsProps): JSX.Element => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [kbModalVisible, setKbModalVisible] = useState(false);
+  const {t, i18n} = useTranslation();
 
+  // Change language and update the state
+  const changeLanguage = (newLang: string) => {
+    i18n.changeLanguage(newLang);
+  };
+
+  // Handle settings change for language and voice
   const handleSettingsChange = (newLanguage: string, newVoice: string) => {
     changeLanguage(newLanguage);
     setVoice(newVoice);
   };
-  const [kbModalVisible, setKbModalVisible] = useState(false);
 
-  const {t, i18n} = useTranslation();
-
-  const changeLanguage = (newLang: string) => {
-    i18n.changeLanguage(newLang);
+  // Handle frequency mode change
+  const handleFrequencyModeChange = (isFrequencyCheckingMode: boolean) => {
+    setIsFrequencyCheckingMode(isFrequencyCheckingMode);
   };
 
   const language = i18n?.language;
@@ -57,14 +69,14 @@ export const Settings: React.FC<SettingsProps> = ({
             <View style={styles.selectionButtons}>
               {/* Buttons for language selection */}
               <SettingsButton
-                text="English"
+                text={t('English')}
                 onPress={() => handleSettingsChange('en', voice)}
                 style={
                   (language?.includes('en') && styles.selectedLanguage) || {}
                 }
               />
               <SettingsButton
-                text="German"
+                text={t('German')}
                 onPress={() => handleSettingsChange('de', voice)}
                 style={
                   (language?.includes('de') && styles.selectedLanguage) || {}
@@ -75,22 +87,40 @@ export const Settings: React.FC<SettingsProps> = ({
             <View style={styles.selectionButtons}>
               {/* Buttons for voice selection */}
               <SettingsButton
-                text="Male"
+                text={t('Male')}
                 onPress={() => handleSettingsChange(language, 'male')}
                 style={(voice === 'male' && styles.selectedLanguage) || {}}
               />
               <SettingsButton
-                text="Female"
+                text={t('Female')}
                 onPress={() => handleSettingsChange(language, 'female')}
                 style={(voice === 'female' && styles.selectedLanguage) || {}}
               />
             </View>
             <Text style={styles.text}>{t('Edit_knowledge_base')}</Text>
             <SettingsButton
-              text="Manage Knowledge Base"
+              text={t('Manage_knowledge_base')}
               onPress={() => setKbModalVisible(true)}
               style={{width: 250}}
             />
+            <Text style={styles.text}>{t('Select_frequency_mode')}</Text>
+            <View style={styles.selectionButtons}>
+              {/* Buttons for frequency mode selection */}
+              <SettingsButton
+                text={t('On')}
+                onPress={() => handleFrequencyModeChange(true)}
+                style={
+                  (isFrequencyCheckingMode && styles.selectedLanguage) || {}
+                }
+              />
+              <SettingsButton
+                text={t('Off')}
+                onPress={() => handleFrequencyModeChange(false)}
+                style={
+                  (!isFrequencyCheckingMode && styles.selectedLanguage) || {}
+                }
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -103,7 +133,6 @@ export const Settings: React.FC<SettingsProps> = ({
       />
 
       {/* Settings Icon */}
-
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
         hitSlop={{top: 20, bottom: 70, left: 50, right: 50}}>
@@ -117,17 +146,17 @@ export const Settings: React.FC<SettingsProps> = ({
   );
 };
 
+// Styles for the Settings component
 const styles = StyleSheet.create({
   closeButton: {
-    // Style for close button container if needed
     position: 'absolute',
     top: 0,
     right: 0,
-    padding: 0, // Makes it easier to press
+    zIndex: 10,
   },
   closeIcon: {
-    width: 80, // Adjust size as needed
-    height: 80, // Adjust size as needed
+    width: 80,
+    height: 80,
   },
   settingsIcon: {
     position: 'absolute',
@@ -137,7 +166,6 @@ const styles = StyleSheet.create({
     height: 30,
   },
   modalView: {
-    // Styles for modal view...
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: 'white',
@@ -152,7 +180,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    height: 300,
+    height: 350,
   },
   optionsContainer: {
     display: 'flex',

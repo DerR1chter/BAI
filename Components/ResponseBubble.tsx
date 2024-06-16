@@ -15,8 +15,14 @@ var Buffer = require('buffer/').Buffer;
 import speaker from '../assets/speaker.png';
 import {fetchSpeech, generateFullResponse} from '../Helpers/OpenAIService.ts';
 
+// Create a new instance of the audio recorder player
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
+/**
+ * ResponseBubble component - Displays the full response and plays the speech.
+ * @param {ResponseBubbleProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const ResponseBubble: React.FC<ResponseBubbleProps> = ({
   question,
   selectedResponse,
@@ -26,7 +32,7 @@ export const ResponseBubble: React.FC<ResponseBubbleProps> = ({
   setWaitingForSpeechGeneration,
   voice,
   chatHistory,
-}) => {
+}: ResponseBubbleProps): JSX.Element => {
   useEffect(() => {
     if (selectedResponse.length > 0) {
       generateFullResponse(
@@ -45,6 +51,10 @@ export const ResponseBubble: React.FC<ResponseBubbleProps> = ({
     }
   }, [fullResponse]);
 
+  /**
+   * Fetches and plays the speech for the given response.
+   * @param {string} fullResponseArg - The full response text.
+   */
   const fetchAndPlaySpeech = async (fullResponseArg: string) => {
     try {
       const response = await fetchSpeech(fullResponseArg, voice);
@@ -104,6 +114,7 @@ export const ResponseBubble: React.FC<ResponseBubbleProps> = ({
   );
 };
 
+// Styles for the ResponseBubble component
 const styles = StyleSheet.create({
   responseBubble: {
     flexDirection: 'row',

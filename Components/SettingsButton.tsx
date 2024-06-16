@@ -10,7 +10,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     margin: 5,
     height: 50,
-    width: 100,
+    width: 'auto',
+    minWidth: '40%',
     justifyContent: 'center',
   },
   serviceButtonText: {
@@ -27,14 +28,19 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ * SettingsButton component - A customizable button used in settings.
+ * @param {SettingsButtonProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const SettingsButton: React.FC<SettingsButtonProps> = ({
   text,
   onPress,
   style = {},
-}) => {
+}: SettingsButtonProps): JSX.Element => {
   return (
     <TouchableOpacity style={[styles.serviceButton, style]} onPress={onPress}>
-      <Text style={[styles.serviceButtonText]}>{text}</Text>
+      <Text style={styles.serviceButtonText}>{text}</Text>
     </TouchableOpacity>
   );
 };

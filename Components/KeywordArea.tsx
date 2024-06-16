@@ -1,20 +1,23 @@
 // KeywordArea.tsx
-import React, {useState} from 'react';
+import React from 'react';
 import {View, StyleSheet, Text, ActivityIndicator} from 'react-native';
 import {Keyword} from './Keyword';
 import {ServiceButton} from './ServiceButton';
 import {KeywordAreaProps} from '../types';
-import {useTranslation} from 'react-i18next';
 
+/**
+ * KeywordArea component - Displays a grid of keywords and service buttons.
+ * @param {KeywordAreaProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const KeywordArea: React.FC<KeywordAreaProps> = ({
   keywords,
   onKeywordPress,
   services,
   onServicePress,
   waitingForResponse,
-}) => {
+}: KeywordAreaProps): JSX.Element => {
   const keyWordsLoaded = keywords.length > 0;
-  const {t} = useTranslation();
 
   return (
     <View style={styles.container}>
@@ -24,9 +27,6 @@ export const KeywordArea: React.FC<KeywordAreaProps> = ({
         </View>
       ) : (
         <View style={styles.keywordArea}>
-          {/* {keyWordsLoaded && (
-            <Text style={styles.text}>{t('Select_keyword')}</Text>
-          )} */}
           <View style={styles.grid}>
             {keywords.map((keyword, index) => (
               <View key={index} style={styles.card}>
@@ -52,11 +52,14 @@ export const KeywordArea: React.FC<KeywordAreaProps> = ({
   );
 };
 
+// Styles for the KeywordArea component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    alignContent: 'center',
+    marginTop: 10,
   },
   keywordArea: {
     margin: 10,
@@ -70,6 +73,7 @@ const styles = StyleSheet.create({
   card: {
     width: '40%', // Fixed width in pixels
     height: '34%', // Fixed height in pixels
+    minHeight: 65,
     marginLeft: 5, // Spacing between cards
     marginRight: 5, // Spacing between cards
     justifyContent: 'center',
@@ -92,6 +96,7 @@ const styles = StyleSheet.create({
   serviceCard: {
     width: '40%', // Fixed width in pixels
     height: '40%', // Fixed height in pixels
+    minHeight: 50,
     marginLeft: 5, // Spacing between cards
     marginRight: 5, // Spacing between cards
     justifyContent: 'center',

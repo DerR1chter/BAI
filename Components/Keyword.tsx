@@ -2,6 +2,27 @@ import React from 'react';
 import {TouchableOpacity, Text, StyleSheet, Animated} from 'react-native';
 import {KeywordProps} from '../types';
 
+/**
+ * Keyword component - Renders a keyword button.
+ * @param {KeywordProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
+export const Keyword: React.FC<KeywordProps> = ({
+  text,
+  onKeywordPress,
+}: KeywordProps): JSX.Element => {
+  return (
+    <TouchableOpacity
+      onPress={() => onKeywordPress(text)}
+      style={styles.keywordContainer}>
+      <Animated.View style={styles.keyword}>
+        <Text style={styles.keywordText}>{text}</Text>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
+// Styles for the Keyword component
 const styles = StyleSheet.create({
   keywordContainer: {
     flex: 1,
@@ -29,15 +50,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-export const Keyword: React.FC<KeywordProps> = ({text, onKeywordPress}) => {
-  return (
-    <TouchableOpacity
-      onPress={() => onKeywordPress(text)}
-      style={styles.keywordContainer}>
-      <Animated.View style={styles.keyword}>
-        <Text style={styles.keywordText}>{text}</Text>
-      </Animated.View>
-    </TouchableOpacity>
-  );
-};

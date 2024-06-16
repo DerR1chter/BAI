@@ -36,11 +36,16 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ * ServiceButton component - A customizable button used for service selection, like "More", "None", "Correction", and "Finished".
+ * @param {ServiceButtonProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const ServiceButton: React.FC<ServiceButtonProps> = ({
   text,
   onPress,
   style,
-}) => {
+}: ServiceButtonProps): JSX.Element => {
   const backgroundColor = {
     Correction: '#668EDA',
     More: '#668EDA',
@@ -51,7 +56,11 @@ export const ServiceButton: React.FC<ServiceButtonProps> = ({
   return (
     <TouchableOpacity onPress={onPress} style={styles.keywordContainer}>
       <Animated.View
-        style={[styles.keyword, {backgroundColor: backgroundColor[text]}]}>
+        style={[
+          styles.keyword,
+          {backgroundColor: backgroundColor[text]},
+          style,
+        ]}>
         <Text style={[styles.keywordText, text === 'None' && styles.noneText]}>
           {text}
         </Text>

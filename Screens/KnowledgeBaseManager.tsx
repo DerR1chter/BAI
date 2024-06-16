@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,39 +9,50 @@ import {
   FlatList,
   Image,
 } from 'react-native';
-import {KnowledgeBase} from '../types';
+import {KnowledgeBase, KnowledgeBaseManagerProps} from '../types';
 import {
   loadKnowledgeBase,
   saveKnowledgeBase,
 } from '../Helpers/KnowledgeBaseLoader';
 import closeIcon from '../assets/close.png';
-import {ServiceButton} from '../Components/ServiceButton';
+import deleteIcon from '../assets/delete.png';
+import renameIcon from '../assets/rename.png';
+import backIcon from '../assets/back.png';
+import saveIcon from '../assets/save.png';
+import cancelIcon from '../assets/cancel.png';
+import {SettingsButton} from '../Components/SettingsButton';
 import ConfirmationModal from './ModalConfirm';
 import {useTranslation} from 'react-i18next';
 
-interface KnowledgeBaseManagerProps {
-  knowledgeBase: KnowledgeBase;
-  setKnowledgeBase: React.Dispatch<React.SetStateAction<KnowledgeBase>>;
-  modalVisible: boolean;
-  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
+/**
+ * KnowledgeBaseManager component - Manages the knowledge base.
+ * Allows adding, renaming, and removing categories and items within the knowledge base.
+ * @param {KnowledgeBaseManagerProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
   knowledgeBase,
   setKnowledgeBase,
   modalVisible,
   setModalVisible,
-}) => {
+}: KnowledgeBaseManagerProps): JSX.Element => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [newItem, setNewItem] = useState<string>('');
   const [newCategory, setNewCategory] = useState<string>('');
-  const [renameCategory, setRenameCategory] = useState<string>('');
   const [isRename, setIsRename] = useState(false);
-  const [prevKnowledgeBase, setPrevKnowledgeBase] = useState<KnowledgeBase>({});
+  const [prevKnowledgeBase, setPrevKnowledgeBase] =
+    useState<KnowledgeBase>(knowledgeBase);
   const [confirmResetVisible, setConfirmResetVisible] = useState(false);
   const {t} = useTranslation();
 
-  console.log('knowledgeBase: ', knowledgeBase);
+  // Save the previous knowledge base state when the modal is opened
+  useEffect(() => {
+    if (modalVisible) {
+      setPrevKnowledgeBase(knowledgeBase);
+    }
+  }, [modalVisible, knowledgeBase]);
+
+  // Handle adding a new item to the selected category
   const handleAddItem = () => {
     if (newItem.trim() && selectedCategory) {
       setKnowledgeBase((prevKnowledgeBase: KnowledgeBase): KnowledgeBase => {
@@ -59,6 +70,7 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
     }
   };
 
+  // Handle removing an item from the selected category
   const handleRemoveItem = (item: string) => {
     if (selectedCategory) {
       setKnowledgeBase((prevKnowledgeBase: KnowledgeBase): KnowledgeBase => {
@@ -74,6 +86,7 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
     }
   };
 
+  // Handle adding a new category to the knowledge base
   const handleAddCategory = () => {
     if (newCategory.trim() && !knowledgeBase[newCategory.trim()]) {
       setKnowledgeBase((prevKnowledgeBase: KnowledgeBase): KnowledgeBase => {
@@ -87,22 +100,21 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
     }
   };
 
-  const handleRenameCategory = () => {
-    if (selectedCategory && renameCategory.trim()) {
+  // Handle renaming a category in the knowledge base
+  const handleRenameCategory = (oldName: string, newName: string) => {
+    if (oldName && newName.trim()) {
       setKnowledgeBase((prevKnowledgeBase: KnowledgeBase): KnowledgeBase => {
-        const {[selectedCategory]: value, ...rest} = prevKnowledgeBase;
+        const {[oldName]: value, ...rest} = prevKnowledgeBase;
         const updatedKnowledgeBase: KnowledgeBase = {
           ...rest,
-          [renameCategory.trim()]: value,
+          [newName.trim()]: value,
         };
         return updatedKnowledgeBase;
       });
-      setSelectedCategory(renameCategory.trim());
-      setRenameCategory('');
-      setIsRename(false);
     }
   };
 
+  // Handle removing a category from the knowledge base
   const handleRemoveCategory = (category: string) => {
     setKnowledgeBase((prevKnowledgeBase: KnowledgeBase): KnowledgeBase => {
       const {[category]: _, ...rest} = prevKnowledgeBase;
@@ -111,6 +123,7 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
     });
   };
 
+  // Handle saving changes to the knowledge base
   const handleSaveChanges = () => {
     saveKnowledgeBase(knowledgeBase);
     setPrevKnowledgeBase(knowledgeBase);
@@ -118,17 +131,21 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
     setSelectedCategory(null);
   };
 
+  // Handle canceling changes and reverting to the previous knowledge base state
   const handleCancelChanges = () => {
     setKnowledgeBase(prevKnowledgeBase);
     setModalVisible(false);
     setSelectedCategory(null);
+    setRenamingCategory(null);
   };
 
+  // Handle selecting a category to view its items
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
     setPrevKnowledgeBase(knowledgeBase);
   };
 
+  // Reset the knowledge base to its original state
   const resetKnowledgeBase = async () => {
     const originalKnowledgeBase = await loadKnowledgeBase(true);
     setKnowledgeBase(originalKnowledgeBase);
@@ -137,6 +154,63 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
     setSelectedCategory(null);
     setConfirmResetVisible(false);
   };
+
+  const [renamingCategory, setRenamingCategory] = useState<string | null>(null);
+  const [renamedCategory, setRenamedCategory] = useState<string>('');
+
+  // Render a category in the FlatList
+  const renderCategory = ({item}: {item: string}) => (
+    <View style={styles.categoryContainer}>
+      {renamingCategory === item ? (
+        <TextInput
+          style={styles.input}
+          value={renamedCategory}
+          onChangeText={setRenamedCategory}
+        />
+      ) : (
+        <TouchableOpacity
+          onPress={() => handleCategorySelect(item)}
+          style={styles.categoryTouchable}>
+          <Text style={styles.categoryText}>{item}</Text>
+        </TouchableOpacity>
+      )}
+      <View style={styles.iconContainer}>
+        {renamingCategory === item ? (
+          <>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => {
+                handleRenameCategory(item, renamedCategory);
+                setRenamingCategory(null);
+              }}>
+              <Image source={saveIcon} style={styles.icon} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => setRenamingCategory(null)}>
+              <Image source={cancelIcon} style={styles.icon} />
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => {
+                setRenamingCategory(item);
+                setRenamedCategory(item);
+              }}>
+              <Image source={renameIcon} style={styles.icon} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => handleRemoveCategory(item)}>
+              <Image source={deleteIcon} style={styles.icon} />
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
+    </View>
+  );
 
   return (
     <>
@@ -149,7 +223,8 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
           <View style={styles.container}>
             <TouchableOpacity
               style={styles.closeButton}
-              onPress={handleCancelChanges}>
+              onPress={handleCancelChanges}
+              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Image source={closeIcon} style={styles.closeIcon} />
             </TouchableOpacity>
             <Text style={styles.title}>{t('Knowledge_base_manager')}</Text>
@@ -157,28 +232,7 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
               <View>
                 <FlatList
                   data={Object.keys(knowledgeBase)}
-                  renderItem={({item}) => (
-                    <View style={styles.categoryContainer}>
-                      <TouchableOpacity
-                        onPress={() => handleCategorySelect(item)}
-                        style={styles.categoryTouchable}>
-                        <Text style={styles.categoryText}>{item}</Text>
-                      </TouchableOpacity>
-                      <View style={styles.renameRemoveContainer}>
-                        <ServiceButton
-                          text={t('Rename')}
-                          onPress={() => {
-                            setSelectedCategory(item);
-                            setIsRename(true);
-                          }}
-                        />
-                        <ServiceButton
-                          text={t('Remove')}
-                          onPress={() => handleRemoveCategory(item)}
-                        />
-                      </View>
-                    </View>
-                  )}
+                  renderItem={renderCategory}
                   keyExtractor={(item, index) => index.toString()}
                 />
                 <View style={styles.buttonsContainer}>
@@ -188,7 +242,7 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
                     value={newCategory}
                     onChangeText={setNewCategory}
                   />
-                  <ServiceButton
+                  <SettingsButton
                     text={t('Add_category')}
                     onPress={handleAddCategory}
                   />
@@ -202,21 +256,22 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
             )}
             {selectedCategory && !isRename && (
               <View>
-                <ServiceButton
-                  text={t('Go_back')}
-                  onPress={() => setSelectedCategory(null)}
-                  style={{backgroundColor: 'gray'}}
-                />
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => setSelectedCategory(null)}>
+                  <Image source={backIcon} style={styles.icon} />
+                </TouchableOpacity>
                 <Text style={styles.subtitle}>{selectedCategory}</Text>
                 <FlatList
                   data={knowledgeBase[selectedCategory]}
                   renderItem={({item}) => (
                     <View style={styles.itemContainer}>
                       <Text style={styles.itemText}>{item}</Text>
-                      <ServiceButton
-                        text={t('Remove')}
-                        onPress={() => handleRemoveItem(item)}
-                      />
+                      <TouchableOpacity
+                        style={styles.iconButton}
+                        onPress={() => handleRemoveItem(item)}>
+                        <Image source={deleteIcon} style={styles.icon} />
+                      </TouchableOpacity>
                     </View>
                   )}
                   keyExtractor={(item, index) => index.toString()}
@@ -230,37 +285,21 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
                     value={newItem}
                     onChangeText={setNewItem}
                   />
-                  <ServiceButton text={t('Add_item')} onPress={handleAddItem} />
+                  <SettingsButton
+                    text={t('Add_item')}
+                    onPress={handleAddItem}
+                  />
                 </View>
                 <View style={styles.buttonsContainer}>
-                  <ServiceButton text={t('Save')} onPress={handleSaveChanges} />
-                  <ServiceButton
+                  <SettingsButton
+                    text={t('Save')}
+                    onPress={handleSaveChanges}
+                  />
+                  <SettingsButton
                     text={t('Cancel')}
                     onPress={handleCancelChanges}
                   />
                 </View>
-              </View>
-            )}
-            {isRename && (
-              <View>
-                <ServiceButton
-                  text={t('Go_back')}
-                  onPress={() => {
-                    setIsRename(false);
-                    setSelectedCategory(null);
-                  }}
-                />
-                <Text style={styles.subtitle}>{t('Rename_category')}</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder={t('New_category')}
-                  value={renameCategory}
-                  onChangeText={setRenameCategory}
-                />
-                <ServiceButton
-                  text={t('Rename')}
-                  onPress={handleRenameCategory}
-                />
               </View>
             )}
           </View>
@@ -279,6 +318,7 @@ const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({
   );
 };
 
+// Styles for the KnowledgeBaseManager component
 const styles = StyleSheet.create({
   modalView: {
     flex: 1,
@@ -299,6 +339,7 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
     padding: 0,
+    zIndex: 10,
   },
   closeIcon: {
     width: 60,
@@ -325,7 +366,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   categoryTouchable: {
-    flex: 0.25,
+    flex: 1,
   },
   categoryText: {
     fontSize: 16,
@@ -336,7 +377,7 @@ const styles = StyleSheet.create({
   renameRemoveContainer: {
     flex: 0.75,
     flexDirection: 'row',
-    justifyContent: 'space-between', // Adjust this if needed
+    justifyContent: 'space-between',
   },
   buttonsContainer: {
     display: 'flex',
@@ -346,7 +387,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   input: {
-    width: '50%',
+    flex: 1,
     height: 40,
     borderColor: '#7A82E2',
     borderWidth: 1,
@@ -375,6 +416,18 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
     marginTop: -60,
     textAlign: 'center',
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    position: 'relative',
+  },
+  icon: {
+    width: 30,
+    height: 30,
+    position: 'relative',
   },
 });
 

@@ -22,6 +22,11 @@ import {useTranslation} from 'react-i18next';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
+/**
+ * InputBubble component - Manages recording, playing, and sending audio.
+ * @param {InputBubbleProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const InputBubble: React.FC<InputBubbleProps> = ({
   text,
   processedText,
@@ -33,7 +38,7 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
   setError,
   chatHistory,
   knowledgeBase,
-}) => {
+}: InputBubbleProps): JSX.Element => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioPath, setAudioPath] = useState<string>('');
@@ -44,6 +49,7 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
   const {t, i18n} = useTranslation();
   const language = i18n?.language;
 
+  // Request microphone permission and set up sound level monitoring
   useEffect(() => {
     const requestPermission = async () => {
       try {
@@ -84,15 +90,11 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
       setSoundLevel(data.value); // sound level in decibels
       updateSoundLevel(data.value);
     };
-
-    // return () => {
-    //   if (isMonitoringStarted) {
-    //     RNSoundLevel.stop();
-    //     setIsMonitoringStarted(false);
-    //   }
-    // };
   }, []);
 
+  /**
+   * Starts audio recording.
+   */
   const onStartRecord = async () => {
     setRecordTime('00:00');
     const path = `${
@@ -115,6 +117,9 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
     });
   };
 
+  /**
+   * Stops audio recording and sends the audio to the Whisper service.
+   */
   const onStopRecord = async () => {
     await audioRecorderPlayer.stopRecorder();
     audioRecorderPlayer.removeRecordBackListener();
@@ -134,6 +139,9 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
     );
   };
 
+  /**
+   * Plays the recorded audio (currently not used in the app).
+   */
   const onPlayAudio = async () => {
     if (!isPlaying) {
       await audioRecorderPlayer.startPlayer(audioPath);
@@ -151,12 +159,22 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
     }
   };
 
+  /**
+   * Formats time from seconds to MM:SS format.
+   * @param {number} totalSeconds - Total seconds to format.
+   * @returns {string} - Formatted time string.
+   */
   const formatTime = (totalSeconds: number): string => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return `${padToTwo(minutes)}:${padToTwo(seconds)}`;
   };
 
+  /**
+   * Pads a number to two digits with leading zeros.
+   * @param {number} number - The number to pad.
+   * @returns {string} - Padded number string.
+   */
   const padToTwo = (number: number) => number.toString().padStart(2, '0');
 
   return (
@@ -171,7 +189,6 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
         </Text>
       </ScrollView>
       {isRecording && <Text style={styles.timerText}>{recordTime}</Text>}
-      {/* <Text>Level: {soundLevel.toFixed(2)} dB</Text> */}
       <TouchableOpacity
         style={styles.mic}
         onPress={isRecording ? onStopRecord : onStartRecord}
@@ -193,17 +210,11 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
           }}
         />
       </TouchableOpacity>
-      {/* {audioPath && !isRecording && (
-        <TouchableOpacity style={styles.playbackButton} onPress={onPlayAudio}>
-          <Text style={styles.playbackText}>
-            {isPlaying ? t('Stop') : t('Play')}
-          </Text>
-        </TouchableOpacity>
-      )} */}
     </View>
   );
 };
 
+// Styles for the InputBubble component
 const styles = StyleSheet.create({
   inputBubble: {
     flexDirection: 'row',
@@ -213,8 +224,8 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingRight: 20,
     margin: 10,
-    height: '75%',
-    marginTop: 20,
+    height: '65%',
+
     width: '90%',
     display: 'flex',
     alignSelf: 'center',

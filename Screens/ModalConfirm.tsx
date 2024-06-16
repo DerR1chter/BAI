@@ -1,16 +1,13 @@
 import React from 'react';
 import {View, Text, StyleSheet, Modal} from 'react-native';
-import {ServiceButton} from '../Components/ServiceButton';
+import {SettingsButton} from '../Components/SettingsButton';
+import {ConfirmationModalProps} from '../types';
 
-interface ConfirmationModalProps {
-  visible: boolean;
-  onRequestClose: () => void;
-  onConfirm: () => void;
-  onCancel: () => void;
-  title: string;
-  message: string;
-}
-
+/**
+ * ConfirmationModal component - A modal dialog to confirm an action.
+ * @param {ConfirmationModalProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   visible,
   onRequestClose,
@@ -18,7 +15,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onCancel,
   title,
   message,
-}) => {
+}: ConfirmationModalProps): JSX.Element => {
   return (
     <Modal
       animationType="fade"
@@ -30,12 +27,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           <Text style={styles.confirmTitle}>{title}</Text>
           <Text style={styles.confirmMessage}>{message}</Text>
           <View style={styles.confirmButtons}>
-            <ServiceButton
+            <SettingsButton
               text="Yes"
               onPress={onConfirm}
               style={{marginRight: 10}}
             />
-            <ServiceButton text="No" onPress={onCancel} />
+            <SettingsButton text="No" onPress={onCancel} />
           </View>
         </View>
       </View>
@@ -43,6 +40,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   );
 };
 
+// Styles for the ConfirmationModal component
 const styles = StyleSheet.create({
   confirmModalView: {
     flex: 1,

@@ -5,27 +5,37 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useTranslation} from 'react-i18next';
 
+// Define the types for the navigation stack parameters
 type RootStackParamList = {
   Welcome: undefined;
   Main: undefined;
 };
 
+// Define the type for the navigation prop for the WelcomeScreen
 type WelcomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Welcome'
 >;
 
+/**
+ * WelcomeScreen component - The initial screen of the app.
+ * Provides a welcome message and a button to navigate to the Main screen.
+ */
 const WelcomeScreen: React.FC = () => {
+  // State to manage the listening status of the microphone
   const [isListening, setIsListening] = useState(false);
+
+  // Navigation hook to navigate between screens
   const navigation = useNavigation<WelcomeScreenNavigationProp>();
 
-  const handleMicrophonePress = () => {
+  // Handle the press event of the start button
+  const handleStartPress = () => {
     setIsListening(true);
-    console.log('Audio recording started');
     navigation.navigate('Main');
     setTimeout(() => setIsListening(false), 3000);
   };
 
+  // Translation hook for internationalization
   const {t} = useTranslation();
 
   return (
@@ -39,7 +49,7 @@ const WelcomeScreen: React.FC = () => {
               styles.microphoneButton,
               isListening && styles.microphoneButtonActive,
             ]}
-            onPress={handleMicrophonePress}>
+            onPress={handleStartPress}>
             <Image
               source={start}
               style={styles.microphoneIcon}
@@ -56,6 +66,7 @@ const WelcomeScreen: React.FC = () => {
   );
 };
 
+// Styles for the WelcomeScreen component
 const styles = StyleSheet.create({
   container: {
     height: '100%',
@@ -92,7 +103,7 @@ const styles = StyleSheet.create({
   microphoneButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#6E55FF',
+    backgroundColor: '#406EBC',
     width: 200,
     height: 200,
     borderRadius: 100,

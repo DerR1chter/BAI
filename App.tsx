@@ -8,11 +8,15 @@ import MainScreen from './Screens/MainScreen';
 
 const Stack = createNativeStackNavigator();
 
+/**
+ * App component - The main entry point of the application.
+ * @returns {JSX.Element} The rendered component.
+ */
 function App(): React.JSX.Element {
   const backgroundStyle = {
     flex: 1,
   };
-  console.log('Hello!');
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <NavigationContainer>

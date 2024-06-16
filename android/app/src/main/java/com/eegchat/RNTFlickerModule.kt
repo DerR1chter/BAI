@@ -1,4 +1,4 @@
-package com.awesomeproject;
+package com.eegchat;
 
 import android.os.Handler;
 import android.os.Looper;

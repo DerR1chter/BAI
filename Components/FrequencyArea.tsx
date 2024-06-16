@@ -13,10 +13,15 @@ import {Frequency} from './Frequency';
 import {ColorPicker} from 'react-native-color-picker';
 import {useTranslation} from 'react-i18next';
 
+/**
+ * FrequencyArea component - Manages the frequency area settings and display.
+ * @param {FrequencyAreaProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const FrequencyArea: React.FC<FrequencyAreaProps> = ({
   frequencyModeBackgroundColor,
   setFrequencyModeBackgroundColor,
-}) => {
+}: FrequencyAreaProps): JSX.Element => {
   const [isColorSelectingMode, setIsColorSelectingMode] = useState(false);
   const [isCardsColorSelectingMode, setIsCardsColorSelectingMode] =
     useState(false);
@@ -26,6 +31,10 @@ export const FrequencyArea: React.FC<FrequencyAreaProps> = ({
   const [isFrequencySpecifyingMode, setIsFrequencySpecifyingMode] =
     useState(false);
 
+  /**
+   * Toggles the frequency specifying mode and manages state changes.
+   * @param {boolean} newValue - The new value for the frequency specifying mode.
+   */
   const toggleFrequencySpecifyingMode = (newValue: boolean) => {
     setIsFrequencySpecifyingMode(newValue);
     setIsCardsColorSelectingMode(false);
@@ -39,6 +48,9 @@ export const FrequencyArea: React.FC<FrequencyAreaProps> = ({
     }
   };
 
+  /**
+   * Submits the new frequencies entered by the user.
+   */
   const submitFrequencies = () => {
     const newFrequencies = frequencyInput
       .split(',')
@@ -131,6 +143,7 @@ export const FrequencyArea: React.FC<FrequencyAreaProps> = ({
   );
 };
 
+// Styles for the FrequencyArea component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
