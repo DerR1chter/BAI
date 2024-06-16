@@ -1,79 +1,131 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# EEGChat
 
-# Getting Started
+This repository presents a smartphone application for a Conversational Brain-Artificial Intelligence Interface (cBAI), done by Yehor Chulkov as part of his bachelor's thesis in SS2024 at the University of Vienna, supervised by Univ.-Prof. Dr.-Ing. Moritz Grosse-Wentrup. The application is based on the work of the Research Group Neuroinformatics and their paper "A Conversational Brain-Artificial Intelligence Interface". The primary objective was to create a mobile application for Android and iOS devices that replicates the functionalities of the existing Windows-based desktop application described in the paper (https://github.com/AKMeunier/EEGChat). The resulting application maintains all core features of the original desktop version, offering enhanced accessibility and portability.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Prerequisites
 
-## Step 1: Start the Metro Server
+- Operating System: MacOS, Linux, or Windows (supporting virtualization)
+- Virtual Android device or physical Android device with the APK installed
+- NodeJS (version 18 or higher)
+- OpenJDK17
+- Android Studio
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+### Step-by-Step Setup Instructions
 
-To start Metro, run the following command from the _root_ of your React Native project:
+### Step 1: Install Necessary Software
 
-```bash
-# using npm
-npm start
+1. **Install NodeJS** (version 18 or higher):
+   Download and install from [NodeJS website](https://nodejs.org/).
 
-# OR using Yarn
-yarn start
+2. **Install OpenJDK17**:
+   Download and install from [AdoptOpenJDK](https://adoptopenjdk.net/).
+
+3. **Install Android Studio**:
+   Download and install from [Android Studio website](https://developer.android.com/studio).
+
+### Step 2: Configure Environment Variables
+
+1. **Set `ANDROID_HOME` Environment Variable**:
+   - For **Windows**:
+     ```
+     setx ANDROID_HOME "C:\path\to\your\Android\Sdk"
+     ```
+   - For **Mac/Linux**:
+     ```
+     export ANDROID_HOME=$HOME/Library/Android/sdk
+     ```
+
+2. **Add `platform-tools` to System Path**:
+   - For **Windows**:
+     ```
+     setx PATH "%PATH%;%ANDROID_HOME%\platform-tools"
+     ```
+   - For **Mac/Linux**:
+     ```
+     export PATH=$PATH:$ANDROID_HOME/platform-tools
+     ```
+
+### Step 3: Set Up Android Virtual Device
+
+1. **Open Android Studio**:
+   - Go to "More Actions" -> "Virtual Device Manager"
+   - Add a new device with API Level 34 (UpsideDownCake)
+   - Complete the setup and start the created virtual device
+
+### Step 4: Clone the Project Repository
+
+1. **Clone the Repository**:
+   ```
+   git clone https://github.com/YehorChulkov/BAI.git
+   cd BAI
+   ```
+
+2. **Add API Key**:
+   - Insert the OpenAI API key into `APIKeysConfig.js` in the "Configs" folder.
+
+3. **Install Dependencies**:
+   ```
+   npm install
+   ```
+
+### Step 5: Start the Metro Server
+
+1. **Start Metro**:
+   ```
+   npm start
+   ```
+
+### Step 6: Choose the operating system to run on
+
+   ```
+a — for Android  
+i — for iOs (available on MacOS only)
+   ```
+
+If everything is set up correctly, you should see the app running in the Android Emulator or iOS Simulator (MacOS only).
+
+### Running the App on a Physical Android Device
+
+1. **Download the APK file from GitHub** and transfer it to your device.
+2. **Install the APK** using the file manager on the device.
+3. **Start the app** from the installed apps list.
+
+
+# Generating an APK
+
+To generate an APK, follow these steps:
+
+### Step 1: Bundle the React Native Code and Assets
+
+Go to the root of the project in the terminal and run the following command:
+
+```
+react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
 ```
 
-## Step 2: Start your Application
+### Step 2: Navigate to the Android Directory
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
-
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```
+cd android
 ```
 
-### For iOS
+### Step 3: Assemble the Debug APK
+On Linux/MacOs
+```
+./gradlew assembleDebug
+```
+or
+```
+.\gradlew assembleDebug
+```
+on Windows.
 
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+You’ll find the APK file in the following path:
+```
+yourProject/android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+## Congratulations!
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+You've successfully run the app! 🥳
 
-## Step 3: Modifying your App
-
-Now that you have successfully run the app, let's modify it.
-
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
-
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
