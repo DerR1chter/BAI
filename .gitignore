@@ -65,6 +65,6 @@ yarn-error.log
 # testing
 /coverage
 
-APIKeysConfig.js
+#Configs/APIKeysConfig.js
 
 android/app/src/main/assets/*.bundle
