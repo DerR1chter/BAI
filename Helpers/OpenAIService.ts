@@ -59,6 +59,7 @@ export const sendAudioToWhisper = async (
       },
     });
     const transcript = response.data;
+    console.log('transcript', transcript);
     setProcessedText(transcript);
     generateResponseOptions(
       transcript,

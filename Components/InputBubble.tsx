@@ -208,7 +208,8 @@ export const InputBubble: React.FC<InputBubbleProps> = ({
    * @param {number} number - The number to pad.
    * @returns {string} - Padded number string.
    */
-  const padToTwo = (number: number) => number.toString().padStart(2, '0');
+  const padToTwo = (number: number): string =>
+    number.toString().padStart(2, '0');
 
   return (
     <View style={styles.inputBubble}>
